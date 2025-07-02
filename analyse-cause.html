@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse accident</title>
+    <link rel="stylesheet" href="global.css">
+</head>
+
+<body>
+    <div class="container">
+        <img class="logo" src="CDES_Logo.png" alt="">
+        <h1> ANALYSE ACCIDENT</h1>
+    </div>
+    <div id="page4">
+        <h2> ANALYSES DES CAUSES</h2>
+        <fieldset>
+            <div>
+                <label>Méthode d'analyse choisie:</label>
+                <label>
+                    <input type="checkbox" name="choix" value="cinq"> Méthode des 5 pourquoi
+                </label>
+                <label>
+                    <input type="checkbox" name="choix" value="arbre"> Arbre des causes
+                </label>
+            </div>
+            <div id="5pourquoi">
+                <h5>1er Pourquoi ?</h5>
+                <input type="text">
+                <h5>2ème Pourquoi ?</h5>
+                <input type="text">
+                <h5>3ème Pourquoi ?</h5>
+                <input type="text">
+                <h5>4ème Pourquoi ?</h5>
+                <input type="text">
+                <h5>5ème Pourquoi ?</h5>
+                <input type="text">
+            </div>
+            <div id="arbre_des_causes">
+                <input type="file" id="photo-input" placeholder="Arbre des causes" accept="image/* .png" multiple>
+                <div id="photo-container"></div>
+            </div>
+        </fieldset>
+    <script src="analyse-cause.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyse accident</title>
+  <link rel="stylesheet" href="global.css">
+  <style>
+   
+  </style>
+</head>
+
+<body>
+  <div id="page1">
+  <div class="container">
+    <img class="logo" src="CDES_Logo.png" alt="">
+    <h1> EVENEMENT ACCIDENTEL</h1>
+  </div>
+  <div class="top-fields">
+    <label>Chantier:<input type="text" id="chantier" placeholder="Nom du chantier"></label>
+    <label>Date:<input type="date" id="accident-date" value=""></label>
+    <label>Heure:<input type="time" id="accident-heure"></label>
+    <label>Remonté par :<input type="text" id="collaborateur"></label>
+    <label>Le :<input type="date" id="date-alerte"></label>
+  </div>
+
+  <fieldset>
+  <legend> Nature de l'incident :</legend>
+    <div id="nature-accident">
+    <select id="nature">
+        <option value="humain">Humain</option>
+        <option value="environnement">Environnement</option>
+        <option value="industriel">Industriel</option>
+    </select>
+    <select id="select-humain">
+        <option value="accident-travail-avec-arret">ACCIDENT DE TRAVAIL AVEC ARRET</option>
+        <option value="accident-travail-sans-arret">ACCIDENT DE TRAVAIL SANS ARRET</option>
+        <option value="accident-benin">ACCIDENT BENIN</option>
+        <option value="presque-accident">PRESQU’ACCIDENT</option>
+        <option value="situation-dangereuse">SITUATION DANGEREUSE</option>
+        <option value="autre">Autre : </option>
+    </select>
+    <select id="select-environnement" style="display: none;">
+        <option value="pollution">POLLUTION</option>
+        <option value="nuisance">NUISANCE</option>
+        <option value="autre">Autre : </option>
+    </select>
+        <select id="select-industriel" style="display: none;">
+        <option value="explosion">EXPLOSION</option>
+        <option value="incident">INCENDIE</option>
+        <option value="autre">Autre : </option>
+    </select>
+    <input type="text" id="input-autre" style="display: none;" placeholder="Saisir autre accident">
+    <select  id="select-pollution" style="display: none;">
+        <option>EAU</option>
+        <option>AIR</option>
+        <option>SOL</option>
+    </select>
+    <select id="select-nuisance" style="display: none;">
+        <option>SONORE</option>
+        <option>OLFACTIVE</option>
+        <option>VISUELLE</option>
+    </select>
+    </div>
+    <div>
+    <h4> RESUME DE L'EVENEMENT </h4> 
+    <textarea></textarea> <!--width: 1422px; height: 77px;--> 
+    </div>
+    <div class="question">
+    <h4> GRAVITE REELLE DE L’INCIDENT :</h4>
+    <select  class="gravite" id="select-gravite-reelle">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+    </div>
+    <br>
+    <div class="question">
+    <h4> GRAVITE POTENTIELLE DE L’INCIDENT :</h4>
+    <select class="gravite" id="gravite-potentielle-select">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+    </div>
+    <br>
+    <div class="question">
+    <h4> EN LIEN AVEC UNE (OU PLUSIEURS) REGLE(S) QUI SAUVENT?</h4>
+    <div class="custom-select" id="customSelect">
+      <div class="selected-option-img" id="selectedOptionImg">
+        <span>Non</span>
+      </div>
+      <div class="options-img" id="optionsListImg">
+                <div class="option-img">
+        <option value="non">Non</option>
+        </div>
+
+        <div class="option-img">
+          <img src="regle1.png" alt="1">
+        </div>
+        <div class="option-img">
+          <img src="regle2.png" alt="2">
+        </div>
+        <div class="option-img">
+          <img src="regle3.png" alt="3">
+        </div>
+        <div class="option-img">
+          <img src="regle4.png" alt="4">
+        </div>
+        <div class="option-img">
+          <img src="regle5.png" alt="5">
+        </div>
+        <div class="option-img">
+          <img src="regle6.png" alt="6">
+        </div>
+        <div class="option-img">
+          <img src="regle7.png" alt="7">
+        </div>
+        <div class="option-img">
+          <img src="regle8.png" alt="8">
+        </div>
+        <div class="option-img">
+          <img src="regle9.png" alt="9">
+        </div>
+        <div class="option-img">
+          <img src="regle10.png" alt="10">
+        </div>
+      </div>                                                      
+    </div>
+    </div>
+    <div id="haut-potentiel" style="display: none;">
+      <h4>Evénement haut potentiel de gravité</h4>
+      <input type="text">
+    </div>
+  </div>
+  </fieldset>
+    <button class="next-button" onclick="redirectToPage()">Suivant</button>  
+  <script src="index.js">
+  </script>
+</body>
+
+</html>

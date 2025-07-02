@@ -1,0 +1,52 @@
+  .description-accident {
+    margin-bottom: 20px;
+  }
+
+  .description-accident span {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .description-accident textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    padding: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  h4 {
+    margin-top: 20px;
+  }
+
+  /* Pour que le contenu s'étende bien sur tout l'écran */
+  body, html {
+    margin: 0;
+    padding: 0;
+  }
+
+.checkbox-group {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.checkbox-group fieldset {
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 300px;         /* ✅ Fixe une largeur raisonnable */
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.checkbox-group legend {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+  #page2 {
+    margin-left: 10px;
+  }

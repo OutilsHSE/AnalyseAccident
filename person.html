@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse accident</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="person.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <img class="logo" src="CDES_Logo.png" alt="">
+        <h1> EVENEMENT ACCIDENTEL</h1>
+    </div>
+    <div id="page2">
+        <h2>CONTEXTE ET ACTEURS</h2>
+        <h4 style="text-decoration:underline;"> PERSONNE BLESSEE :</h4>
+        <div class="top-fields">
+            <label>Nom:<input type="text" id="nom"></label>
+            <label>Prenom:<input type="text" id="prenom" value=""></label>
+            <label>Fonction:<input type="text" id=""></label>
+            <label>Ancienneté dans le poste : </label>
+            <select style="width: 200px;">
+                <option>Nouveau collaborateur</option>
+                 <option> Inférieur à 1 an</option>
+                  <option> Supérieur à 1 an</option>
+            </select>
+        </div>
+        <h4 style="text-decoration:underline;">TEMOINS :</h4>
+        <div class="top-fields">
+            <label>Nom:<input type="text" id="nom"></label>
+            <label>Prenom:<input type="text" id="prenom" value=""></label>
+            <label>Fonction:<input type="text" id=""></label>
+        </div>
+        <h4 style="text-decoration:underline;"> CHRONOLOGIE DETAILLEE DE L'EVENEMENT :</h4>
+        <fieldset>
+            <legend> Que s’est-il passé ? (Qui ? Quand? Quoi ? Où? Comment ? Quantité estimée ? Personnes touchées ?
+                durée
+                ?)</legend>
+            <div>   
+            <div style="padding-top: 5px;" class="description-accident">
+                <span> 1- Avant l’incident (description de la situation juste avant que l’incident ait lieu : travail en
+                    cours,
+                    conditions de travail,etc.)</span>
+                <textarea></textarea>
+            </div>
+            <div class="description-accident">
+                <span> 2- Au moment de l’incident (évènement accidentel) :</span>
+                <textarea></textarea>
+            </div>
+            <div class="description-accident">
+                <span> 3- Après l’incident (ce qui a été fait : suppression d’un danger, secours à la victime, actions
+                    correctives à chaud) :</span>
+                <textarea></textarea>
+            </div>
+            </div> 
+        </fieldset>
+        <h2>DOMMAGES ET CONSEQUENCES</h2>
+        <div class="checkbox-group" id="dommage-humain" style="display: none;">
+            <!-- Partie du corps blessée -->
+            <fieldset>
+                <legend>Partie du corps blessée :</legend>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Tête arcade"> Tête arcade</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Tête"> Tête</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Cou"> Cou</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Epaule"> Epaule</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Poumons"> Poumons</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Tronc Colonne"> Tronc
+                    Colonne</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Dos"> Dos</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Bras"> Bras</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Coude"> Coude</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Avant-bras"> Avant-bras</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Main"> Main</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Doigt"> Doigt</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Cuisse"> Cuisse</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Genou"> Genou</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Jambe"> Jambe</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Cheville"> Cheville</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Pied"> Pied</label><br>
+                <label><input type="checkbox" name="partie_corps_blessee" value="Orteil"> Orteil</label>
+            </fieldset>
+
+            <!-- Type de blessure -->
+            <fieldset>
+                <legend>Type de blessure :</legend>
+                <label><input type="checkbox" name="type_blessure" value="Décès"> Décès</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Lombalgie"> Lombalgie</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Traumatisme"> Traumatisme</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Ecrasement"> Ecrasement</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Contusion"> Contusion</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Déchirure musculaire"> Déchirure
+                    musculaire</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Entorse/luxation">
+                    Entorse/luxation</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Fracture"> Fracture</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Ecorchure"> Ecorchure</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Coupure / plaie"> Coupure / plaie</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Morsure"> Morsure</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Piqûre"> Piqûre</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Asphyxie"> Asphyxie</label><br>
+                <label><input type="checkbox" name="type_blessure" value="Autre"> Autre : <input type="text"
+                        id="autre_type_blessure"> </label>
+            </fieldset>
+        </div>
+        <div id="dommage-environnement" style="display: none;">
+            <fieldset>
+                <legend>Dommages environnement</legend>
+                <div>
+                    <label for="textarea_type"> Type:</label>
+                    <textarea id="textarea_type"></textarea>
+                </div>
+                <div>
+                    <label for="textarea_cout"> Coût:</label>
+                    <textarea id="textarea_cout"></textarea>
+                </div>
+            </fieldset>
+        </div>
+                <div id="dommage-industiel" style="display: none;">
+            <fieldset>
+                <legend>Dommages</legend>
+                <div>
+                    <label for="textarea_type"> Type:</label>
+                    <textarea id="textarea_type"></textarea>
+                </div>
+                <div>
+                    <label for="textarea_cout"> Coût:</label>
+                    <textarea id="textarea_cout"></textarea>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <button class="next-button" onclick="redirectToPage()">Suivant</button>
+    <script src="person.js"></script>
+</body>
+
+</html>

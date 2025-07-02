@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse accident</title>
+    <link rel="stylesheet" href="global.css">
+</head>
+
+<body>
+    <div class="container">
+        <img class="logo" src="CDES_Logo.png" alt="">
+        <h1> ANALYSE ACCIDENT</h1>
+    </div>
+    <div id="page4">
+
+        <h2>PLAN D'ACTIONS</h2>
+        <fieldset>
+            <table id="obs-table">
+                <thead>
+                    <tr>
+                        <th>N° action</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                        <th>Pilote</th>
+                        <th>Délai</th>
+                        <th>Suppr.</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="buttons">
+                <button class="add-row" onclick="addRow()">Ajouter une action</button>
+            </div>
+        </fieldset>
+    </div>
+    <div class="buttons">
+        <button class="export" onclick="print()">Imprimer</button>
+        <button class="export" onclick="download()"> Exporter</button>
+    </div>
+    <script src="plan-action.js"></script>
+</body>
+
+</html>

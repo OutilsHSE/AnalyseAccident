@@ -1,0 +1,204 @@
+ body {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    .top-fields {
+      display: flex;
+      flex-wrap: wrap;
+      /* Permettre aux éléments de passer à la ligne si nécessaire */
+      gap: 20px;
+      /* Espace entre les éléments */
+      margin-bottom: 20px;
+      align-items: baseline;
+    }
+
+    .top-fields label {
+      font-weight: bold;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+    }
+
+    .top-fields input {
+      margin-left: 10px;
+      /* Espace entre le label et l'input */
+      flex: 1;
+      /* Permettre à l'input de prendre l'espace disponible */
+    }
+
+    /* Style pour les petits écrans */
+    @media (max-width: 600px) {
+      .top-fields {
+        flex-direction: column;
+        /* Disposer les éléments en colonne */
+        align-items: flex-start;
+        /* Aligner les éléments à gauche */
+      }
+
+      .top-fields label {
+        width: 100%;
+        /* Prendre toute la largeur disponible */
+      }
+
+      .top-fields input {
+        width: calc(100% - 10px);
+        /* Ajuster la largeur de l'input pour tenir compte de la marge */
+      }
+    }
+
+    select,
+    input[type="text"],
+    input[type="date"] {
+      width: 100%;
+    }
+
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .export {
+      background: #2196F3;
+      color: white;
+    }
+
+    .buttons {
+      margin-bottom: 10px;
+    }
+
+    input::placeholder {
+      font-size: 0.7rem;
+      /* Taille par défaut */
+    }
+
+    /* Conteneur principal utilisant Flexbox */
+    .container {
+      display: flex;
+      align-items:flex-start;
+      margin-bottom: 50px;
+      background-color: rgb(116, 204, 239);
+    }
+
+    /* Styles pour les images */
+    .logo {
+      max-width: 100px;
+      /* Ajuster la taille des images selon vos besoins */
+      height: auto;
+      /* Maintenir les proportions des images */
+    }
+
+    /* Style pour le titre */
+    h1 {
+      margin: 30px;
+      /* Supprimer la marge par défaut */
+      font-size: 2rem;
+      /* Ajuster la taille du texte selon vos besoins */
+    }
+
+    input {
+      min-height: 25px;
+    }
+
+    .large-row {
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+    }
+
+    button {
+      margin-left: auto;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      /* Assure que le padding et la bordure sont inclus dans la largeur */
+    }
+    .print-description {
+      display: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14px;
+      border: none;
+      padding: 4px;
+      max-width: 100px;
+    }
+
+    select {
+      min-height: 25px;
+      min-width: 100px;
+      margin-bottom: 10px;
+    }
+
+    .custom-select {
+      position: relative;
+      margin-top: 10px;
+      margin-left: 5px;
+      width: 250px;
+    }
+
+    .selected-option-img {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      padding: 8px;
+      cursor: pointer;
+      background-color: white;
+    }
+
+    .selected-option-img img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+
+    .options-img {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      border: 1px solid #ccc;
+      background: white;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      z-index: 10;
+    }
+
+    .option-img {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .option-img:hover {
+      background-color: #eee;
+    }
+
+    .option-img img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+
+    .nature-accident {
+      display: inline-flex;
+    }
+    
+    .question {
+      display: inline-flex;
+      margin-top: 10px;
+    }
+
+    .gravite {
+      margin-top: 10px;
+      margin-left: 5px;
+      width: 20px;
+      height: 25px;
+    }
+    fieldset {
+    margin-top: 10px;}

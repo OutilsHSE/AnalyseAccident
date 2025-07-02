@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse accident</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="actions.css">
+</head>
+
+<body>
+    <div id="page3">
+        <div class="container">
+            <img class="logo" src="CDES_Logo.png" alt="">
+            <h1> ANALYSE ACCIDENT</h1>
+        </div>
+        <h2>ACTIONS ENGAGEES</h4>
+            <div id="soins">
+                <fieldset>
+                    <div>
+                        <label>- Premiers soins donnés</label>
+                        <label>
+                            <input type="checkbox" name="choix-soin" value="oui"> Oui
+                        </label>
+                        <label>
+                            <input type="checkbox" name="choix-soin" value="non"> Non
+                        </label>
+                        <input type="text" id="soins">
+                    </div>
+                    <br>
+                    <div>
+                        <label>- Victime transportée à :</label>
+                        <label>
+                            <input type="checkbox" name="choix-lieu" value="medecin"> Medecin
+                        </label>
+                        <label>
+                            <input type="checkbox" name="choix-lieu" value="urgences"> Urgences
+                        </label>
+                        <label>
+                            <input type="checkbox" name="choix-lieu" value="autre"> Autre 
+                     </label>
+                              
+                    </div>
+                      <br>
+                            <input type="text" id="autre-lieu">
+                    
+                    <br>
+                    <div>
+                        <label> - Arrêt de travail</label>
+                        <label>
+                            <input type="checkbox" name="choix-arret" value="oui"> Oui
+                        </label>
+                        <label>
+                            <input type="checkbox" name="choix-arret" value="non"> Non
+                        </label>
+                    </div>
+                    <div>
+                        <label>- Mission aménagée proposée :</label>
+                        <label>
+                            <input type="checkbox" name="choix-mission" value="oui"> Oui
+                        </label>
+                        <label>
+                            <input type="checkbox" name="choix-mission" value="non"> Non
+                        </label>
+                    </div>
+
+                </fieldset>
+            </div>
+            <div id="environnement">
+                <fieldset>
+                    <legend>Confinement</legend>
+                    <div>
+                        <label>Confinement d’une zone :</label>
+                        <label>
+                            <input type="checkbox" name="choix-confinement" value="oui"> Oui
+                        </label>
+                        <label>
+                            <input type="checkbox" name="choix-confinement" value="non"> Non
+                        </label>
+                    </div>
+                    <div>
+                        <label>Moyens externes contactés (pompiers) :</label>
+                        <label>
+                            <input type="radio" name="choix-contact" value="oui"> Oui
+                        </label>
+                        <label>
+                            <input type="radio" name="choix-contact" value="non"> Non
+                        </label>
+                        <div>
+                            <label>Type d’actions engagées :</label>
+                            <input type="text">
+                        </div>
+                </fieldset>
+            </div>
+            <div id="alert">
+                <fieldset>
+                    <legend>Alerte</legend>
+                    <div>
+                        <label>Déclenchement d’une alerte auprès d’un organisme compétent (ex :DREAL) :</label>
+                        <label>
+                            <input type="checkbox" name="choix-alert" value="oui"> Oui
+                        </label>
+                        <label>
+                            <input type="checkbox" name="choix-alert" value="non"> Non
+                        </label>
+                    </div>
+                    <div>
+                        <label>Client contacté :</label>
+                        <label>
+                            <input type="checkbox" name="choix-contact2" value="oui"> Oui
+                        </label>
+                        <label>
+                            <input type="checkbox" name="choix-contact2" value="non"> Non
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+            <fieldset style="margin-top: 20px;">
+                <legend>ILLUSTATIONS</legend>
+                <span style="font-style: italic;">Photos, schémas illustrant le lieu de l’incident, le matériel en
+                    cause, les dommages
+                    corporels, environnementaux ou
+                    industriels</h3>
+                    <input type="file" id="photo-input" accept="image/* .png" multiple>
+                    <div id="photo-container"></div>
+            </fieldset>
+    </div>
+    <button class="next-button" onclick="redirectToPage()">Suivant</button>
+    <script src="actions.js"></script>
+
+</body>
+
+</html>
