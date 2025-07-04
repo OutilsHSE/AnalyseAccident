@@ -202,3 +202,75 @@
     }
     fieldset {
     margin-top: 10px;}
+       @media (min-width: 1200px) {
+    .resume{
+      width: 1446px;
+       height: 117px;
+    }}
+
+           @media (max-width: 1200px) {
+    .resume{
+      width: 200px;
+       height: 400px;
+    }}
+
+    .info{
+      color:white;
+      background: #2196F3;
+      margin-left: 10px;
+      height: 40px;
+      width: 40px;
+      border-radius: 100%;
+    }
+
+        .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+    }
+
+    /* Contenu de l'image */
+    .modal-content {
+      margin: 10% auto;
+      display: block;
+      max-width: 80%;
+      border-radius: 8px;
+      box-shadow: 0 0 20px #fff;
+      background: white;
+      padding: 10px;
+    }
+
+    /* Bouton de fermeture */
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: red;
+    }
+        /* Bouton de fermeture */
+    .close-cause {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: white;
+      font-size: 30px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-cause:hover {
+      color: red;
+    }

@@ -25,8 +25,8 @@
             <label>Ancienneté dans le poste : </label>
             <select style="width: 200px;">
                 <option>Nouveau collaborateur</option>
-                 <option> Inférieur à 1 an</option>
-                  <option> Supérieur à 1 an</option>
+                <option> Inférieur à 1 an</option>
+                <option> Supérieur à 1 an</option>
             </select>
         </div>
         <h4 style="text-decoration:underline;">TEMOINS :</h4>
@@ -38,26 +38,129 @@
         <h4 style="text-decoration:underline;"> CHRONOLOGIE DETAILLEE DE L'EVENEMENT :</h4>
         <fieldset>
             <legend> Que s’est-il passé ? (Qui ? Quand? Quoi ? Où? Comment ? Quantité estimée ? Personnes touchées ?
-                durée
-                ?)</legend>
-            <div>   
-            <div style="padding-top: 5px;" class="description-accident">
-                <span> 1- Avant l’incident (description de la situation juste avant que l’incident ait lieu : travail en
-                    cours,
-                    conditions de travail,etc.)</span>
-                <textarea></textarea>
+                durée ? Conditions climatiques ?)</legend>
+            <div>
+                <div style="padding-top: 5px;" class="description-accident">
+                    <span> 1- Avant l’incident (description de la situation juste avant que l’incident ait lieu :
+                        travail en
+                        cours,
+                        conditions de travail,etc.)</span>
+                    <textarea></textarea>
+                </div>
+                <div class="description-accident">
+                    <span> 2- Au moment de l’incident (évènement accidentel) :</span>
+                    <textarea></textarea>
+                </div>
+                <div class="description-accident">
+                    <span> 3- Après l’incident (ce qui a été fait : suppression d’un danger, secours à la victime,
+                        actions
+                        correctives à chaud) :</span>
+                    <textarea></textarea>
+                </div>
+            </fieldset>  
+               <div id="analyse_approfondie" style="display: none;"> 
+                <h4 style="text-decoration:underline;"> ANALYSE DES FACTEURS HUMAINS ET ORGANISATIONNELS :</h4>
+                <fieldset>
+                    <div class="description-accident">
+                        <span>1 - Mode opératoire (tâches, accès, circulation…)</span>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="description-accident">
+                        <span>2 - Moyens humains mis en place (le jour de l’événement) </span>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Ancienneté des victimes dans leurs fonctions / formations et qualifications / culture HSE
+                            des collaborateurs :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>EPI requis / utilisés :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Autres moyens de protections requis / utilisés :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="description-accident" style="padding-top: 5px;">
+                        <span>3 – Moyens organisationnels mis en place (le jour de l’événement)</span>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>SSE (PPSPS / PDP) :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Analyse des risques en amont (Risque intégré dans le DU) :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Permis de travail spécifique :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Vigiminutes réalisées :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Accueils SSE des intervenants :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="description-accident" style="padding-top: 5px;">
+                        <span>4 – Moyens techniques mis en place (le jour de l’événement)</span>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Équipements soumis à VGP :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Âge des équipements concernés :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Dysfonctionnements constatés :
+
+                        </label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Réparations effectuées :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Incidents antérieurs :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Maintenance réalisée récemment :</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Modification des processus ou de la procédure d’intervention :</label>
+                        <input type="text">
+                    </div>
+                </fieldset>
+                </div>  
             </div>
-            <div class="description-accident">
-                <span> 2- Au moment de l’incident (évènement accidentel) :</span>
-                <textarea></textarea>
-            </div>
-            <div class="description-accident">
-                <span> 3- Après l’incident (ce qui a été fait : suppression d’un danger, secours à la victime, actions
-                    correctives à chaud) :</span>
-                <textarea></textarea>
-            </div>
-            </div> 
-        </fieldset>
         <h2>DOMMAGES ET CONSEQUENCES</h2>
         <div class="checkbox-group" id="dommage-humain" style="display: none;">
             <!-- Partie du corps blessée -->
@@ -119,7 +222,7 @@
                 </div>
             </fieldset>
         </div>
-                <div id="dommage-industiel" style="display: none;">
+        <div id="dommage-industiel" style="display: none;">
             <fieldset>
                 <legend>Dommages</legend>
                 <div>

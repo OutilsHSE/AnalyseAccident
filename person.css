@@ -50,3 +50,20 @@
   #page2 {
     margin-left: 10px;
   }
+
+  .form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .form-row label {
+    width: 400px;
+    min-width: 250px;
+    margin-right: 10px;
+  }
+
+  .form-row input {
+    flex: 1;
+    padding: 5px;
+  }

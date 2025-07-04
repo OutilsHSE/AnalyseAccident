@@ -5,9 +5,9 @@ function addRow() {
     tr.innerHTML = `
         <td>1</td>
                 <td><select>
-          <option value="PP">Organisationel</option>
-          <option value="PA">Technique</option>
-          <option value="CD">Humain</option>
+          <option value="organisationnel"> 📋 Organisationel</option>
+          <option value="technique"> 🛠️ Technique</option>
+          <option value="humain"> 👤 Humain</option>
           </select></td>
           <td><input type="text" placeholder="Action à mener"></td>
         <td><input type="text"></td>

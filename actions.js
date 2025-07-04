@@ -26,8 +26,6 @@ window.onload = function () {
     const photoContainer = document.getElementById('photo-container');
 
     photoInput.addEventListener('change', function () {
-        // Vider l'affichage actuel
-        photoContainer.innerHTML = '';
 
         Array.from(this.files).forEach((file, index) => {
             const reader = new FileReader();

@@ -3,6 +3,9 @@ window.onload = function () {
     const dommage_humain = document.getElementById("dommage-humain");
     const dommage_environnement = document.getElementById("dommage-environnement");
     const dommage_autre = document.getElementById("dommage-industiel");
+    const analyse = localStorage.getItem('analyse');
+     const hipo = localStorage.getItem('HIPO');
+     const analyse_approfondie= document.getElementById("analyse_approfondie");
     if (nature === 'humain') {
         dommage_humain.style.display = 'block';
         dommage_environnement.style.display = 'none';
@@ -19,6 +22,9 @@ window.onload = function () {
             dommage_environnement.style.display = 'none';
             dommage_autre.style.display = 'block';
         }
+    }
+    if(analyse === 'true' || hipo == 'true') {
+        analyse_approfondie.style.display = 'block';
     }
 }
 

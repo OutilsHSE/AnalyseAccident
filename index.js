@@ -46,7 +46,7 @@ nature.addEventListener('change', function () {
     selectHumain.style.display = 'none';
     selectEnvironnement.style.display = 'none';
     selectIndustriel.style.display = 'none';
-
+    inputAutre.style.display = 'none';
     // Afficher seulement celui qui correspond
     if (this.value === 'humain') {
         selectHumain.style.display = 'block';
@@ -76,6 +76,7 @@ selectEnvironnement.addEventListener('change', function () {
 selectIndustriel.addEventListener('change', function () {
     // Masquer tout d'abord tous les selects secondaires
     const selectPollution = document.getElementById('select-pollution');
+      inputAutre.style.display = 'none';
     selectPollution.style.display = 'none';
     if (this.value === 'autre') {
         inputAutre.style.display = 'block';
@@ -86,6 +87,8 @@ selectHumain.addEventListener('change', function () {
     // Masquer tout d'abord tous les selects secondaires
     const selectGravity = document.getElementById('select-gravite-reelle');
     // Afficher seulement celui qui correspond
+    
+    inputAutre.style.display = 'none';
     if (this.value === 'presque-accident' || this.value === 'situation-dangereuse') {
         selectGravity.disabled = true;
     } else {
@@ -109,9 +112,12 @@ function verifierConditions() {
 
     if (conditionNature && (conditionGravite || conditionRegle)) {
         groupEvenementHautPotentiel.style.display = 'block';
+        localStorage.setItem('HIPO',true);
     } else {
         groupEvenementHautPotentiel.style.display = 'none';
     }
+    
+    localStorage.setItem('analyse',nature === 'accident-travail-avec-arret' || regleImage);
 }
 
 // Écouteurs pour chaque changement
@@ -153,6 +159,28 @@ function loadPageContent() {
         document.querySelector('#page1').outerHTML = savedContent;
     }
 }
+
+ // Sélection des éléments
+    const modal = document.getElementById("myModal");
+    const btn = document.getElementById("openModalBtn");
+    const closeBtn = document.querySelector(".close");
+
+    // Ouvrir le modal
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    // Fermer quand on clique sur la croix
+    closeBtn.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // Fermer quand on clique en dehors de l'image
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    }
 
 function redirectToPage() {
     savePageContent();

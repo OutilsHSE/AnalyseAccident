@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analyse accident</title>
     <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="analyse-cause.css">
 </head>
 
 <body>
@@ -19,13 +20,15 @@
             <div>
                 <label>Méthode d'analyse choisie:</label>
                 <label>
-                    <input type="checkbox" name="choix" value="cinq"> Méthode des 5 pourquoi
-                </label>
+                    <input type="checkbox" name="choix" value="cinq" onchange="checkOnlyOne(this)"> Méthode des 5
+                    pourquoi
+                </label><button id="openModalBtn" class="info">!</button>
                 <label>
-                    <input type="checkbox" name="choix" value="arbre"> Arbre des causes
+                    <input type="checkbox" name="choix" value="arbre" onchange="checkOnlyOne(this)"> Arbre des causes
+
                 </label>
             </div>
-            <div id="5pourquoi">
+            <div id="5pourquoi" style="display: none;">
                 <h5>1er Pourquoi ?</h5>
                 <input type="text">
                 <h5>2ème Pourquoi ?</h5>
@@ -37,12 +40,54 @@
                 <h5>5ème Pourquoi ?</h5>
                 <input type="text">
             </div>
-            <div id="arbre_des_causes">
+            <div id="arbre_des_causes" style="display: none;">
                 <input type="file" id="photo-input" placeholder="Arbre des causes" accept="image/* .png" multiple>
                 <div id="photo-container"></div>
             </div>
         </fieldset>
-    <script src="analyse-cause.js"></script>
+        <h2> CAUSES PROFONDES :  <button id="openModalBtnCause" class="info">!</button> </h2>
+        <table>
+            <thead>
+            <th>Technique</th>
+            <th>Organisationnelle</th>
+            <th>Humaine</th>
+            </thead>
+            <tbody>
+            <td> <textarea type="text" class="cause-input"></textarea></td>
+            <td> <textarea type="text" class="cause-input"></textarea></td>
+            <td> <textarea type="text" class="cause-input"></textarea></td>
+            </tbody>
+        </table>
+        <button class="next-button" onclick="redirectToPage()">Suivant</button>
+
+        <!-- Modal -->
+        <div id="myModal" class="modal">
+            <span class="close">&times;</span>
+            <div class="modal-content">
+                <p> La <span style="font-weight:bold;"> méthodologie des 5 Pourquoi </span> est une technique simple et
+                    efficace d’analyse des causes profondes d’un problème. Elle consiste à poser la question "Pourquoi
+                    ?" de manière répétée (généralement cinq fois) jusqu’à remonter à la cause racine de l’incident ou
+                    de la défaillance.
+                    <span style="font-weight:bold;"> Objectif :</span> <br>
+                    Identifier <span style="font-weight:bold;"> la vraie origine d’un problème </span> pour éviter de
+                    traiter uniquement ses symptômes.
+                    <span style="font-weight:bold;"> Principe : </span> <br>
+                    À chaque réponse, on repose la question "Pourquoi ?", en se basant sur la réponse précédente.
+                    Cela permet de <span style="font-weight:bold;"> creuser progressivement </span> jusqu’à la source du
+                    problème.
+                </p>
+            </div>
+        </div>
+                <div id="myModalCause" class="modal">
+            <span class="close-cause">&times;</span>
+            <div class="modal-content">
+                <p> Suite à l’analyse, dressez la liste des causes profondes qui ont contribuées à la survenue de
+l’événement. Les causes profondes sont les échecs fondamentaux qui, lorsqu’elles sont
+correctement traitées, empêcheront la répétition de l’incident.
+                </p>
+            </div>
+        </div>
+        <script src="analyse-cause.js"></script>
 </body>
 
 </html>

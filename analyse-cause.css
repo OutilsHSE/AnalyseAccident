@@ -1,0 +1,21 @@
+  table {
+    border-collapse: collapse;
+  }
+
+  th {
+    height: 50px;
+    border: 1px solid #ccc;
+  }
+   td {
+    width: 300px;
+    height: 100px;
+    border: 1px solid #ccc;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .cause-input {
+    width: 90%;
+    height: 80%;
+    box-sizing: border-box;
+  }
