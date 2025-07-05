@@ -120,7 +120,7 @@ function verifierConditions() {
         localStorage.removeItem('HIPO');
     }
     
-    localStorage.setItem('analyse',nature === 'accident-travail-avec-arret' || regleImage);
+    localStorage.setItem('analyse',nature === 'accident-travail-avec-arret' || conditionRegle);
 }
 
 // Écouteurs pour chaque changement
