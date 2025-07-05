@@ -3,8 +3,8 @@ function addRow() {
     const tbody = document.querySelector('#obs-table tbody');
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td>1</td>
-                <td><select>
+        <td></td>
+                <td><select style="margin-top:10px">
           <option value="organisationnel"> 📋 Organisationel</option>
           <option value="technique"> 🛠️ Technique</option>
           <option value="humain"> 👤 Humain</option>
@@ -15,10 +15,19 @@ function addRow() {
         <td><button class="remove-row" onclick="removeRow(this)">✖</button></td>
       `;
     tbody.appendChild(tr);
+    updateCounters();
 }
 function removeRow(btn) {
     btn.closest('tr').remove();
     updateCounters();
+}
+
+function updateCounters() {
+    const rows = document.querySelectorAll('#obs-table tbody tr');
+    rows.forEach((row, index) => {
+        const cell = row.querySelector('td');
+        cell.textContent = index + 1; // numéro de ligne
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -32,35 +41,78 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleInputs(selectElement);
     }
 });
+ function printAllPages() {
+
+    const page1Content = localStorage.getItem('page1Content');
+    const page2Content = localStorage.getItem('page2Content');
+    const page3Content = localStorage.getItem('page3Content');
+    const page4Content = localStorage.getItem('page4Content');
+
+    const page = document.querySelector('#page5');
+    const inputs = page.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+      if (input.type === 'checkbox' || input.type === 'radio') {
+        input.checked ? input.setAttribute('checked', 'checked') : input.removeAttribute('checked');
+      } else {
+        input.setAttribute('value', input.value);
+      }
+
+      if (input.tagName.toLowerCase() === 'textarea') {
+        input.textContent = input.value;
+      }
+
+      if (input.tagName.toLowerCase() === 'select') {
+        const options = input.querySelectorAll('option');
+        options.forEach(option => {
+          option.selected = option.value === input.value;
+        });
+      }
+    });
+
+    const page5Clone = page.cloneNode(true);
+
+    const tempContainer1 = document.createElement('div');
+    const tempContainer2 = document.createElement('div');
+    const tempContainer3 = document.createElement('div');
+    const tempContainer4 = document.createElement('div');
+
+    if (page1Content) tempContainer1.innerHTML = page1Content;
+    if (page2Content) tempContainer2.innerHTML = page2Content;
+    if (page3Content) tempContainer3.innerHTML = page3Content;
+    if (page4Content) tempContainer4.innerHTML = page4Content;
+
+    // Assemblage final dans un conteneur temporaire
+    const finalContainer = document.createElement('div');
+    finalContainer.style.padding = '20px'; // Pour une mise en page propre
+    if (page1Content) finalContainer.innerHTML += '<div class="page-section page-break">' + tempContainer1.innerHTML + '</div>';
+    if (page2Content) finalContainer.innerHTML += '<div class="page-section page-break">' + tempContainer2.innerHTML + '</div>';
+    if (page3Content) finalContainer.innerHTML += '<div class="page-section page-break">' + tempContainer3.innerHTML + '</div>';
+    if (page4Content) finalContainer.innerHTML += '<div class="page-section page-break">' + tempContainer4.innerHTML + '</div>';
+    finalContainer.innerHTML += '<div>' + page5Clone.outerHTML + '</div>';
+
+    document.body.appendChild(finalContainer); // Temporairement dans le DOM
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write('<html><head>');
+      printWindow.document.write('<link rel="stylesheet" href="global.css">');
+      printWindow.document.write('<link rel="stylesheet" href="analyse-cause.css">');
+      printWindow.document.write('<link rel="stylesheet" href="person.css">');
+      printWindow.document.write('<link rel="stylesheet" href="actions.css">');
+      printWindow.document.write('<link rel="stylesheet" href="plan-actions.css">');
+      printWindow.document.write('</head><body>');
+      printWindow.document.write(finalContainer.innerHTML);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 1000);
+
+      finalContainer.remove();
+    
+  }
 
 window.onload = function () {
     addRow();
 }
 
-function download() {
-    const element = document.body.cloneNode(true);
-
-    // Supprimer les boutons et éléments non imprimables
-    const buttons = element.querySelectorAll('button, .no-print');
-    buttons.forEach(btn => btn.remove());
-
-    // Forcer les textareas à afficher leur texte dans une div (comme en mode print)
-    const textareas = element.querySelectorAll('textarea.description');
-    textareas.forEach(textarea => {
-        const div = document.createElement('div');
-        div.className = 'print-description';
-        div.textContent = textarea.value;
-        textarea.parentNode.insertBefore(div, textarea);
-        textarea.remove();
-    });
-
-    const opt = {
-        margin: 0.5,
-        filename: 'VMS_Observations.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(element).save();
-}

@@ -10,21 +10,22 @@
 </head>
 
 <body>
-    <div id="page3">
+
         <div class="container">
             <img class="logo" src="CDES_Logo.png" alt="">
             <h1> ANALYSE ACCIDENT</h1>
         </div>
+        <div id="page3">
         <h2>ACTIONS ENGAGEES</h4>
             <div id="soins">
                 <fieldset>
                     <div>
                         <label>- Premiers soins donnés</label>
                         <label>
-                            <input type="checkbox" name="choix-soin" value="oui"> Oui
+                            <input type="radio" name="choix-soin" value="oui"> Oui
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-soin" value="non"> Non
+                            <input type="radio" name="choix-soin" value="non"> Non
                         </label>
                         <input type="text" id="soins">
                     </div>
@@ -32,13 +33,13 @@
                     <div>
                         <label>- Victime transportée à :</label>
                         <label>
-                            <input type="checkbox" name="choix-lieu" value="medecin"> Medecin
+                            <input type="radio" name="choix-lieu" value="medecin"> Medecin
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-lieu" value="urgences"> Urgences
+                            <input type="radio" name="choix-lieu" value="urgences"> Urgences
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-lieu" value="autre"> Autre 
+                            <input type="radio" name="choix-lieu" value="autre"> Autre 
                      </label>
                               
                     </div>
@@ -49,19 +50,19 @@
                     <div>
                         <label> - Arrêt de travail</label>
                         <label>
-                            <input type="checkbox" name="choix-arret" value="oui"> Oui
+                            <input type="radio" name="choix-arret" value="oui"> Oui
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-arret" value="non"> Non
+                            <input type="radio" name="choix-arret" value="non"> Non
                         </label>
                     </div>
                     <div>
                         <label>- Mission aménagée proposée :</label>
                         <label>
-                            <input type="checkbox" name="choix-mission" value="oui"> Oui
+                            <input type="radio" name="choix-mission" value="oui"> Oui
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-mission" value="non"> Non
+                            <input type="radio" name="choix-mission" value="non"> Non
                         </label>
                     </div>
 
@@ -73,10 +74,10 @@
                     <div>
                         <label>Confinement d’une zone :</label>
                         <label>
-                            <input type="checkbox" name="choix-confinement" value="oui"> Oui
+                            <input type="radio" name="choix-confinement" value="oui"> Oui
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-confinement" value="non"> Non
+                            <input type="radio" name="choix-confinement" value="non"> Non
                         </label>
                     </div>
                     <div>
@@ -99,19 +100,19 @@
                     <div>
                         <label>Déclenchement d’une alerte auprès d’un organisme compétent (ex :DREAL) :</label>
                         <label>
-                            <input type="checkbox" name="choix-alert" value="oui"> Oui
+                            <input type="radio" name="choix-alert" value="oui"> Oui
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-alert" value="non"> Non
+                            <input type="radio" name="choix-alert" value="non"> Non
                         </label>
                     </div>
                     <div>
                         <label>Client contacté :</label>
                         <label>
-                            <input type="checkbox" name="choix-contact2" value="oui"> Oui
+                            <input type="radio" name="choix-contact2" value="oui"> Oui
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-contact2" value="non"> Non
+                            <input type="radio" name="choix-contact2" value="non"> Non
                         </label>
                     </div>
                 </fieldset>
@@ -122,8 +123,10 @@
                     cause, les dommages
                     corporels, environnementaux ou
                     industriels</h3>
-                    <input type="file" id="photo-input" accept="image/* .png" multiple>
+                    <div>
+                    <input type="file" id="photo-input" accept="image/* .png" class="no-print" multiple>
                     <div id="photo-container"></div>
+                    </div>
             </fieldset>
     </div>
     <button class="next-button" onclick="redirectToPage()">Suivant</button>

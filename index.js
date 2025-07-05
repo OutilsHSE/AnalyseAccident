@@ -1,5 +1,6 @@
 
-window.onload = function () {
+window.onload = function () 
+{
     document.getElementById('accident-date').valueAsDate = new Date();
 }
 
@@ -8,27 +9,28 @@ const options = document.getElementById("optionsListImg");
 const customSelect = document.getElementById("customSelect");
 
 selected.addEventListener("click", () => {
-    options.style.display = options.style.display === "block" ? "none" : "block";
+  options.style.display = options.style.display === "block" ? "none" : "block";
 });
 
 document.querySelectorAll(".option-img").forEach(option => {
-    option.addEventListener("click", () => {
-        const img = option.querySelector("img").src;
-        selected.innerHTML = `<img src="${img}" alt="">`;
-        options.style.display = "none";
+  option.addEventListener("click", () => {
+    const img = option.querySelector("img");
+    const value = option.getAttribute("data-value");
 
-        // Optionnel : stocker la valeur
-        const value = option.getAttribute("data-value");
-        console.log("Valeur sélectionnée :", value);
-    });
-});
-
-// Fermer si clic en dehors
-document.addEventListener("click", (e) => {
-    if (!customSelect.contains(e.target)) {
-        options.style.display = "none";
+    if (img) {
+      selected.innerHTML = `<img src="${img.src}" alt="">`;
+    } else {
+      selected.innerHTML = `<span>Non</span>`;
     }
+
+    // Stocker la valeur sélectionnée si nécessaire
+    selected.setAttribute("data-value", value);
+    console.log("Valeur sélectionnée :", value);
+
+    options.style.display = "none";
+  });
 });
+
 
 const nature = document.getElementById('nature');
 const selectAccident = document.getElementById('select-accident');
@@ -115,6 +117,7 @@ function verifierConditions() {
         localStorage.setItem('HIPO',true);
     } else {
         groupEvenementHautPotentiel.style.display = 'none';
+        localStorage.removeItem('HIPO');
     }
     
     localStorage.setItem('analyse',nature === 'accident-travail-avec-arret' || regleImage);

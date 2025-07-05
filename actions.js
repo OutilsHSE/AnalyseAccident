@@ -39,7 +39,7 @@ window.onload = function () {
                 // Image preview
                 const img = document.createElement('img');
                 img.src = e.target.result;
-                img.style.width = '120px';
+                img.style.width = '360px';
                 img.style.height = 'auto';
                 img.style.border = '1px solid #ccc';
                 img.style.borderRadius = '8px';
@@ -56,19 +56,31 @@ window.onload = function () {
                 btn.style.borderRadius = '0 8px 0 8px';
                 btn.style.cursor = 'pointer';
 
+                     // Zone de commentaire
+                const textarea = document.createElement('textarea');
+                textarea.placeholder = 'Ajouter un commentaire...';
+                textarea.style.width = '120px';
+                textarea.style.marginTop = '5px';
+                textarea.style.borderRadius = '4px';
+                textarea.style.resize = 'none';
+                textarea.rows = 2;
+
+
                 btn.addEventListener('click', () => {
                     imageWrapper.remove();
                 });
 
                 imageWrapper.appendChild(img);
                 imageWrapper.appendChild(btn);
+                imageWrapper.appendChild(textarea);
                 photoContainer.appendChild(imageWrapper);
             };
 
             reader.readAsDataURL(file);
         });
     });
-function savePageContent() {
+
+    function savePageContent() {
     const page = document.querySelector('#page3');
     const inputs = page.querySelectorAll('input, textarea, select');
     inputs.forEach(input => {

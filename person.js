@@ -7,7 +7,7 @@ window.onload = function () {
      const hipo = localStorage.getItem('HIPO');
      const analyse_approfondie= document.getElementById("analyse_approfondie");
     if (nature === 'humain') {
-        dommage_humain.style.display = 'block';
+        dommage_humain.style.display = 'flex';
         dommage_environnement.style.display = 'none';
         dommage_autre.style.display = 'none';
     }
@@ -23,9 +23,15 @@ window.onload = function () {
             dommage_autre.style.display = 'block';
         }
     }
+    
     if(analyse === 'true' || hipo == 'true') {
         analyse_approfondie.style.display = 'block';
     }
+    else
+    { 
+         analyse_approfondie.style.display = 'none';
+    }
+
 }
 
 function savePageContent() {

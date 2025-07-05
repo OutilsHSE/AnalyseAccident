@@ -12,7 +12,7 @@
 <body>
     <div class="container">
         <img class="logo" src="CDES_Logo.png" alt="">
-        <h1> ANALYSE ACCIDENT</h1>
+        <h1> EVENEMENT ACCIDENT</h1>
     </div>
     <div id="page4">
         <h2> ANALYSES DES CAUSES</h2>
@@ -22,7 +22,7 @@
                 <label>
                     <input type="checkbox" name="choix" value="cinq" onchange="checkOnlyOne(this)"> Méthode des 5
                     pourquoi
-                </label><button id="openModalBtn" class="info">!</button>
+                </label><button class="no-print info" id="openModalBtn">!</button>
                 <label>
                     <input type="checkbox" name="choix" value="arbre" onchange="checkOnlyOne(this)"> Arbre des causes
 
@@ -30,22 +30,25 @@
             </div>
             <div id="5pourquoi" style="display: none;">
                 <h5>1er Pourquoi ?</h5>
-                <input type="text">
+                <textarea></textarea>
                 <h5>2ème Pourquoi ?</h5>
-                <input type="text">
+                <textarea></textarea>
                 <h5>3ème Pourquoi ?</h5>
-                <input type="text">
+                <textarea></textarea>
                 <h5>4ème Pourquoi ?</h5>
-                <input type="text">
+                <textarea></textarea>
                 <h5>5ème Pourquoi ?</h5>
-                <input type="text">
+                <textarea></textarea>
             </div>
             <div id="arbre_des_causes" style="display: none;">
-                <input type="file" id="photo-input" placeholder="Arbre des causes" accept="image/* .png" multiple>
+                <input type="file" id="photo-input" placeholder="Arbre des causes" accept="image/* .png" class="no-print" multiple>
                 <div id="photo-container"></div>
             </div>
         </fieldset>
-        <h2> CAUSES PROFONDES :  <button id="openModalBtnCause" class="info">!</button> </h2>
+        <div style="display: flex;">
+            <h2> CAUSES PROFONDES :  </h2>
+          <button id="openModalBtnCause" class="info"  style="margin-top: 5px;">!</button>
+        </div>
         <table>
             <thead>
             <th>Technique</th>
@@ -58,6 +61,7 @@
             <td> <textarea type="text" class="cause-input"></textarea></td>
             </tbody>
         </table>
+        </div>
         <button class="next-button" onclick="redirectToPage()">Suivant</button>
 
         <!-- Modal -->
@@ -86,7 +90,7 @@ l’événement. Les causes profondes sont les échecs fondamentaux qui, lorsqu�
 correctement traitées, empêcheront la répétition de l’incident.
                 </p>
             </div>
-        </div>
+        
         <script src="analyse-cause.js"></script>
 </body>
 

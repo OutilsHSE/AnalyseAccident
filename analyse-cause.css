@@ -19,3 +19,12 @@
     height: 80%;
     box-sizing: border-box;
   }
+
+  textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    padding: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
