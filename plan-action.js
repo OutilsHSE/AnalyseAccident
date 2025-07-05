@@ -50,25 +50,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const page = document.querySelector('#page5');
     const inputs = page.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
-      if (input.type === 'checkbox' || input.type === 'radio') {
-        input.checked ? input.setAttribute('checked', 'checked') : input.removeAttribute('checked');
-      } else {
-        input.setAttribute('value', input.value);
-      }
+inputs.forEach(input => {
+  const tag = input.tagName.toLowerCase();
 
-      if (input.tagName.toLowerCase() === 'textarea') {
-        input.textContent = input.value;
-      }
-
-      if (input.tagName.toLowerCase() === 'select') {
-        const options = input.querySelectorAll('option');
-        options.forEach(option => {
-          option.selected = option.value === input.value;
-        });
-      }
+  if (input.type === 'checkbox' || input.type === 'radio') {
+    if (input.checked) {
+      input.setAttribute('checked', 'checked');
+    } else {
+      input.removeAttribute('checked');
+    }
+  } else if (tag === 'textarea') {
+    input.innerHTML = input.value; // ✅ pour textarea
+  } else if (tag === 'select') {
+    const options = input.querySelectorAll('option');
+    options.forEach(option => {
+      option.selected = option.value === input.value;
     });
-
+  } else {
+    input.setAttribute('value', input.value); // ✅ pour les inputs texte
+  }
+});
     const page5Clone = page.cloneNode(true);
 
     const tempContainer1 = document.createElement('div');
@@ -97,16 +98,18 @@ document.addEventListener('DOMContentLoaded', function () {
       printWindow.document.write('<link rel="stylesheet" href="analyse-cause.css">');
       printWindow.document.write('<link rel="stylesheet" href="person.css">');
       printWindow.document.write('<link rel="stylesheet" href="actions.css">');
-      printWindow.document.write('<link rel="stylesheet" href="plan-actions.css">');
+      printWindow.document.write('<link rel="stylesheet" href="plan-action.css">');
       printWindow.document.write('</head><body>');
       printWindow.document.write(finalContainer.innerHTML);
       printWindow.document.write('</body></html>');
       printWindow.document.close();
 
+    printWindow.onload = () => {
       setTimeout(() => {
         printWindow.print();
         printWindow.close();
       }, 1000);
+    };
 
       finalContainer.remove();
     

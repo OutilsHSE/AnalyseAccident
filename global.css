@@ -69,11 +69,6 @@
    margin-bottom: 10px;
  }
 
- input::placeholder {
-   font-size: 0.7rem;
-   /* Taille par défaut */
- }
-
  /* Conteneur principal utilisant Flexbox */
  .container {
    display: flex;
@@ -302,15 +297,6 @@
 }
 
 @media print {
-  body {
-    font-size: 11pt;
-  }
-
-  th,
-  th {
-    font-size: 10pt;
-  }
-
   .page:last-child {
     page-break-after: avoid;
   }
@@ -320,6 +306,10 @@
         print-color-adjust: exact;
         /* Standard */
       }
+     .resume {
+     width: 900px;
+     height: 117px;
+   }    
 }
 .page-break {
   page-break-after: always;

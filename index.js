@@ -136,24 +136,6 @@ document.querySelectorAll(".option-img").forEach(option => {
     });
 });
 
-function savePageContent() {
-    const page = document.querySelector('#page1');
-    const inputs = page.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
-        if (input.type === 'checkbox' || input.type === 'radio') {
-            if (input.checked) {
-                input.setAttribute('checked', 'checked');
-            } else {
-                input.removeAttribute('checked');
-            }
-        } else {
-            input.setAttribute('value', input.value);
-            if (input.id === 'nature')
-                localStorage.setItem('nature', input.value)
-        }
-    });
-    localStorage.setItem('page1Content', document.querySelector('#page1').outerHTML);
-}
 
 function loadPageContent() {
     // Restaurer le contenu HTML de la page avec les valeurs des champs
@@ -186,10 +168,10 @@ function loadPageContent() {
     }
 
 function redirectToPage() {
-    savePageContent();
+     savePageContentById('page1');
     window.location.href = 'person.html';
 }
 
 window.onbeforeunload = function () {
-    savePageContent();
+     savePageContentById('page1');
 }

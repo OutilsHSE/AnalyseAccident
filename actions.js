@@ -104,10 +104,10 @@ function loadPageContent() {
 }
 
 function redirectToPage() {
-    savePageContent();
+    savePageContentById('page3');
     window.location.href = 'analyse-cause.html';
 }
 
 window.onbeforeunload = function () {
-    savePageContent();
+     savePageContentById('page3');
 }

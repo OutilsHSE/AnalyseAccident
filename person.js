@@ -34,21 +34,6 @@ window.onload = function () {
 
 }
 
-function savePageContent() {
-    const page = document.querySelector('#page2');
-    const inputs = page.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
-        if (input.type === 'checkbox' || input.type === 'radio') {
-            if (input.checked) {
-                input.setAttribute('checked', 'checked');
-            } else {
-                input.removeAttribute('checked');
-            }
-        }
-    });
-    localStorage.setItem('page2Content', document.querySelector('#page2').outerHTML);
-}
-
 function loadPageContent() {
     // Restaurer le contenu HTML de la page avec les valeurs des champs
     const savedContent = localStorage.getItem('page2Content');
@@ -58,10 +43,10 @@ function loadPageContent() {
 }
 
 function redirectToPage() {
-    savePageContent();
+     savePageContentById('page2');
     window.location.href = 'actions.html';
 }
 
 window.onbeforeunload = function () {
-    savePageContent();
+     savePageContentById('page2');
 }

@@ -119,24 +119,8 @@ window.onclick = function (event) {
   }
 }
 
-function savePageContent() {
-    const page = document.querySelector('#page4');
-    const inputs = page.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
-        if (input.type === 'checkbox' || input.type === 'radio') {
-            if (input.checked) {
-                input.setAttribute('checked', 'checked');
-            } else {
-                input.removeAttribute('checked');
-            }
-        } else {
-            input.setAttribute('value', input.value);
-        }
-    });
-    localStorage.setItem('page4Content', document.querySelector('#page4').outerHTML);
-}
 
 function redirectToPage() {
-  savePageContent();
+  savePageContentById('page4');
   window.location.href = 'plan-action.html';
 }
