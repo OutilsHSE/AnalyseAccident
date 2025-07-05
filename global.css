@@ -309,7 +309,11 @@
      .resume {
      width: 900px;
      height: 117px;
-   }    
+   }
+   
+   #select-humain {
+    min-width: 300px;
+   }
 }
 .page-break {
   page-break-after: always;
