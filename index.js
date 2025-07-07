@@ -2,6 +2,7 @@
 window.onload = function () 
 {
     document.getElementById('accident-date').valueAsDate = new Date();
+        localStorage.setItem('nature','humain')
 }
 
 const selected = document.getElementById("selectedOptionImg");
@@ -57,6 +58,7 @@ nature.addEventListener('change', function () {
     } else if (this.value === 'industriel') {
         selectIndustriel.style.display = 'block';
     }
+    localStorage.setItem('nature',this.value)
 });
 
 selectEnvironnement.addEventListener('change', function () {
