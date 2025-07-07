@@ -68,3 +68,7 @@
     flex: 1;
     padding: 5px;
   }
+
+  .analyse-textarea {
+    height: 150px;
+  }
