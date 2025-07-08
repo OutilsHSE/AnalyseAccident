@@ -16,3 +16,6 @@ select{
     width: 150px;
     padding: 5px;
 }
+textarea {
+    height: 250px;
+}

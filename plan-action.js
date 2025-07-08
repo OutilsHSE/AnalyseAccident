@@ -9,7 +9,7 @@ function addRow() {
           <option value="technique"> 🛠️ Technique</option>
           <option value="humain"> 👤 Humain</option>
           </select></td>
-          <td><input type="text" placeholder="Action à mener"></td>
+          <td><textarea placeholder="Action à mener"></textarea></td>
         <td><input type="text"></td>
         <td><input type="text"></td>
         <td><button class="remove-row" onclick="removeRow(this)">✖</button></td>
