@@ -24,7 +24,7 @@ window.onload = function () {
         }
     }
     
-    if(analyse === 'true' || hipo == 'true') {
+    if( hipo == 'true') {
         analyse_approfondie.style.display = 'block';
     }
     else

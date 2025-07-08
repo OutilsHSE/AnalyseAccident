@@ -16,7 +16,6 @@
         <h1> EVENEMENT ACCIDENTEL</h1>
     </div>
     <div id="page5">
-
         <h2>PLAN D'ACTIONS</h2>
         <fieldset>
             <table id="obs-table">
@@ -27,25 +26,27 @@
                         <th>Action</th>
                         <th>Pilote</th>
                         <th>Délai</th>
-                        <th>Suppr.</th>
+                        <th class="no-print">Suppr.</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
-            <div class="buttons">
+            <div class="buttons no-print">
                 <button class="add-row" onclick="addRow()">Ajouter une action</button>
             </div>
         </fieldset>
-    </div>
+   
     <div>
         <h2>EVALUATION DES RISQUES : </h2>
         <ul>
-            <li>Le risque était-il identifié dans le Document Unique CDES ? <input type="radio">	Oui </input>  <input type="radio">Non </input></li>
-            <li>L’évaluation des risques doit-elle être mise à jour ? <input type="radio">	Oui </input>  <input type="radio">Non </input></li>
-            <li>L’évaluation des risques a-t-elle été mise à jour (à la date du rapport) <input type="radio">	Oui </input>  <input type="radio">Non </input>  </li>
+            
+            <li>Le risque était-il identifié dans le Document Unique CDES ? <input type="radio" value="oui" name="choix1">Oui  <input type="radio" value="non" name="choix1">Non</li>
+            <li>L’évaluation des risques doit-elle être mise à jour ? <input type="radio" value="oui" name="choix2">	Oui  <input type="radio" value="non" name="choix2">Non</li>
+            <li>L’évaluation des risques a-t-elle été mise à jour (à la date du rapport) <input type="radio" value="oui" name="choix3">Oui <input type="radio" value="non" name="choix3">Non </li>
         </ul>
     </div>
-    <div class="buttons">
+     </div>
+    <div class="buttons no-print">
         <button class="export" onclick="printAllPages()">Exporter en PDF</button>
     </div>
     <script src="plan-action.js"></script>

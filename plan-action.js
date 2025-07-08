@@ -1,19 +1,24 @@
-
 function addRow() {
     const tbody = document.querySelector('#obs-table tbody');
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td></td>
-                <td><select style="margin-top:10px">
-          <option value="organisationnel"> 📋 Organisationel</option>
-          <option value="technique"> 🛠️ Technique</option>
-          <option value="humain"> 👤 Humain</option>
-          </select></td>
-          <td><textarea placeholder="Action à mener"></textarea></td>
+        <td style="width:5px;"></td>
+        <td style="width:50px;">
+            <select style="margin-top:10px">
+                <option value="organisationnel">📋 Organisationnel</option>
+                <option value="technique">🛠️ Technique</option>
+                <option value="humain">👤 Humain</option>
+            </select>
+        </td>
+        <td>
+            <textarea placeholder="Action à mener" style="width: 100%; box-sizing: border-box;" rows="3"></textarea>
+        </td>
         <td><input type="text"></td>
         <td><input type="text"></td>
-        <td><button class="remove-row" onclick="removeRow(this)">✖</button></td>
-      `;
+        <td style="width:5px;" class="no-print">
+            <button class="remove-row" onclick="removeRow(this)">✖</button>
+        </td>
+    `;
     tbody.appendChild(tr);
     updateCounters();
 }

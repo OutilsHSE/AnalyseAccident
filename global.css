@@ -1,6 +1,6 @@
  body {
    font-family: Arial, sans-serif;
-   font-size: 14px;
+   font-size: 12px;
  }
 
  .top-fields {
@@ -89,7 +89,7 @@
  h1 {
    margin: 30px;
    /* Supprimer la marge par défaut */
-   font-size: 2rem;
+   font-size: 20px;
    /* Ajuster la taille du texte selon vos besoins */
  }
 
@@ -117,7 +117,6 @@
    display: none;
    white-space: pre-wrap;
    word-break: break-word;
-   font-size: 14px;
    border: none;
    padding: 4px;
    max-width: 100px;
@@ -313,6 +312,9 @@
    
    #select-humain {
     min-width: 300px;
+   }
+   .no-print  {
+    display: none;
    }
 }
 .page-break {

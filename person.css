@@ -67,9 +67,24 @@
   .form-row textarea {
     flex: 1;
     padding: 5px;
-    height: 50px;
   }
 
   .analyse-textarea {
     height: 250px;
   }
+
+@media print {
+  /* Réduit la hauteur des textareas avec la classe spécifique */
+  .analyse-textarea {
+    height: 150px !important;
+  }
+
+  /* Réduit la hauteur uniquement des textareas dans .form-row */
+  .form-row textarea {
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+    overflow: hidden !important;
+    resize: none !important;
+  }
+}
