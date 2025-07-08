@@ -17,7 +17,11 @@ function savePageContentById(pageId) {
         } else if (tag === 'select') {
             const options = input.querySelectorAll('option');
             options.forEach(option => {
-                option.selected = option.value === input.value;
+                if (option.value === input.value) {
+                    option.setAttribute('selected', 'selected');
+                } else {
+                    option.removeAttribute('selected');
+                }
             });
         } else {
             input.setAttribute('value', input.value);
