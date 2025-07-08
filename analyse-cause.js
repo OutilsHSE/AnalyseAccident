@@ -38,7 +38,7 @@ photoInput.addEventListener('change', function () {
       // Image preview
       const img = document.createElement('img');
       img.src = e.target.result;
-      img.style.width = '360px';
+      img.style.width = '1000px';
       img.style.height = 'auto';
       img.style.border = '1px solid #ccc';
       img.style.borderRadius = '8px';

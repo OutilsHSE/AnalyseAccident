@@ -108,13 +108,10 @@ function verifierConditions() {
     const gravite = parseInt(gravitePotentielleSelect.value, 10);
     const regleImage = regleContainer.querySelector("img"); // vérifie si une image est sélectionnée
 
-    const conditionNature =
-        nature === 'presque-accident' || nature === 'situation-dangereuse';
-
     const conditionGravite = gravite > 3;
     const conditionRegle = regleImage !== null;
 
-    if (conditionNature && (conditionGravite || conditionRegle)) {
+    if (conditionGravite || conditionRegle) {
         groupEvenementHautPotentiel.style.display = 'block';
         localStorage.setItem('HIPO',true);
     } else {
