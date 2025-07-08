@@ -1,6 +1,6 @@
 
 window.onload = function () {
-  const evenementHipo = localStorage.getItem('HIPO');
+/*  const evenementHipo = localStorage.getItem('HIPO');
 
   // Compare bien à la chaîne "true"
   if (evenementHipo === "true") {
@@ -16,7 +16,7 @@ window.onload = function () {
 
     arbreMethode.style.display = 'block';
     pourquoiMethode.style.display = 'none';
-  }
+  }*/
 }
 
 
