@@ -67,10 +67,14 @@ inputs.forEach(input => {
   } else if (tag === 'textarea') {
     input.innerHTML = input.value; // ✅ pour textarea
   } else if (tag === 'select') {
-    const options = input.querySelectorAll('option');
-    options.forEach(option => {
-      option.selected = option.value === input.value;
-    });
+             const options = input.querySelectorAll('option');
+            options.forEach(option => {
+                if (option.value === input.value) {
+                    option.setAttribute('selected', 'selected');
+                } else {
+                    option.removeAttribute('selected');
+                }
+            });
   } else {
     input.setAttribute('value', input.value); // ✅ pour les inputs texte
   }
