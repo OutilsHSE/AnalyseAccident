@@ -22,6 +22,21 @@ window.onload = function () {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    const radios = document.getElementsByName("choix-transport");
+    const serviceSanteDiv = document.getElementById("service-sante");
+
+    radios.forEach(radio => {
+        radio.addEventListener("change", function () {
+            if (this.value === "oui") {
+                serviceSanteDiv.style.display = "block";
+            } else {
+                serviceSanteDiv.style.display = "none";
+            }
+        });
+    });
+});
+
  const photoInput = document.getElementById('photo-input');
     const photoContainer = document.getElementById('photo-container');
 

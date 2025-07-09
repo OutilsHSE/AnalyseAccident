@@ -12,11 +12,11 @@
 
 <body>
 
-        <div class="container">
-            <img class="logo" src="CDES_Logo.png" alt="">
-            <h1> ANALYSE ACCIDENT</h1>
-        </div>
-        <div id="page3">
+    <div class="container">
+        <img class="logo" src="CDES_Logo.png" alt="">
+        <h1> ANALYSE ACCIDENT</h1>
+    </div>
+    <div id="page3">
         <h2>ACTIONS ENGAGEES</h4>
             <div id="soins">
                 <fieldset>
@@ -32,21 +32,18 @@
                     </div>
                     <br>
                     <div>
-                        <label>- Victime transportée à :</label>
+                        <label>- Victime transportée dans un service de santé :</label>
                         <label>
-                            <input type="checkbox" name="choix-lieu" value="medecin"> Medecin
+                            <input type="radio" name="choix-transport" value="oui"> Oui
                         </label>
                         <label>
-                            <input type="checkbox" name="choix-lieu" value="urgences"> Urgences
+                            <input type="radio" name="choix-transport" value="non"> Non
                         </label>
-                        <label>
-                            <input type="checkbox" name="choix-lieu" value="autre"> Autre 
-                     </label>
-                              
                     </div>
-                      <br>
-                            <input type="text" id="autre-lieu">
-                    
+                    <div id="service-sante" style="display: none; margin-top: 5px;">
+                        <label> Service de santé (Médecin, Urgences, Pharmacie ...):</label>
+                        <input type="text" id="autre-lieu">
+                    </div>
                     <br>
                     <div>
                         <label> - Arrêt de travail</label>
@@ -120,13 +117,14 @@
             </div>
             <fieldset style="margin-top: 20px;">
                 <legend>ILLUSTATIONS</legend>
-                <span style="font-style: italic;" class="no-print">Photos, schémas illustrant le lieu de l’incident, le matériel en
+                <span style="font-style: italic;" class="no-print">Photos, schémas illustrant le lieu de l’incident, le
+                    matériel en
                     cause, les dommages
                     corporels, environnementaux ou
                     industriels</h3>
                     <div>
-                    <input type="file" id="photo-input" accept="image/* .png" class="no-print" multiple>
-                    <div id="photo-container"></div>
+                        <input type="file" id="photo-input" accept="image/* .png" class="no-print" multiple>
+                        <div id="photo-container"></div>
                     </div>
             </fieldset>
     </div>
