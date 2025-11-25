@@ -1,8 +1,20 @@
 
-window.onload = function () 
-{
+window.onload = function () {
+    localStorage.clear();
+
+    // Efface tout le sessionStorage
+    sessionStorage.clear();
+
+    window.addEventListener("load", () => {
+
+        // Si tu veux aussi vider tous les inputs et textarea
+        document.querySelectorAll("input, textarea").forEach(el => {
+            el.value = "";
+        });
+    });
+
     document.getElementById('accident-date').valueAsDate = new Date();
-        localStorage.setItem('nature','humain')
+    localStorage.setItem('nature', 'humain')
 }
 
 const selected = document.getElementById("selectedOptionImg");
@@ -10,26 +22,26 @@ const options = document.getElementById("optionsListImg");
 const customSelect = document.getElementById("customSelect");
 
 selected.addEventListener("click", () => {
-  options.style.display = options.style.display === "block" ? "none" : "block";
+    options.style.display = options.style.display === "block" ? "none" : "block";
 });
 
 document.querySelectorAll(".option-img").forEach(option => {
-  option.addEventListener("click", () => {
-    const img = option.querySelector("img");
-    const value = option.getAttribute("data-value");
+    option.addEventListener("click", () => {
+        const img = option.querySelector("img");
+        const value = option.getAttribute("data-value");
 
-    if (img) {
-      selected.innerHTML = `<img src="${img.src}" alt="">`;
-    } else {
-      selected.innerHTML = `<span>Non</span>`;
-    }
+        if (img) {
+            selected.innerHTML = `<img src="${img.src}" alt="">`;
+        } else {
+            selected.innerHTML = `<span>Non</span>`;
+        }
 
-    // Stocker la valeur sélectionnée si nécessaire
-    selected.setAttribute("data-value", value);
-    console.log("Valeur sélectionnée :", value);
+        // Stocker la valeur sélectionnée si nécessaire
+        selected.setAttribute("data-value", value);
+        console.log("Valeur sélectionnée :", value);
 
-    options.style.display = "none";
-  });
+        options.style.display = "none";
+    });
 });
 
 
@@ -58,7 +70,7 @@ nature.addEventListener('change', function () {
     } else if (this.value === 'industriel') {
         selectIndustriel.style.display = 'block';
     }
-    localStorage.setItem('nature',this.value)
+    localStorage.setItem('nature', this.value)
 });
 
 selectEnvironnement.addEventListener('change', function () {
@@ -80,7 +92,7 @@ selectEnvironnement.addEventListener('change', function () {
 selectIndustriel.addEventListener('change', function () {
     // Masquer tout d'abord tous les selects secondaires
     const selectPollution = document.getElementById('select-pollution');
-      inputAutre.style.display = 'none';
+    inputAutre.style.display = 'none';
     selectPollution.style.display = 'none';
     if (this.value === 'autre') {
         inputAutre.style.display = 'block';
@@ -91,7 +103,7 @@ selectHumain.addEventListener('change', function () {
     // Masquer tout d'abord tous les selects secondaires
     const selectGravity = document.getElementById('select-gravite-reelle');
     // Afficher seulement celui qui correspond
-    
+
     inputAutre.style.display = 'none';
     if (this.value === 'presque-accident' || this.value === 'situation-dangereuse') {
         selectGravity.disabled = true;
@@ -113,13 +125,13 @@ function verifierConditions() {
 
     if (conditionGravite || conditionRegle) {
         groupEvenementHautPotentiel.style.display = 'block';
-        localStorage.setItem('HIPO',true);
+        localStorage.setItem('HIPO', true);
     } else {
         groupEvenementHautPotentiel.style.display = 'none';
         localStorage.removeItem('HIPO');
     }
-    
-    localStorage.setItem('analyse',nature === 'accident-travail-avec-arret' || conditionRegle);
+
+    localStorage.setItem('analyse', nature === 'accident-travail-avec-arret' || conditionRegle);
 }
 
 // Écouteurs pour chaque changement
@@ -144,33 +156,33 @@ function loadPageContent() {
     }
 }
 
- // Sélection des éléments
-    const modal = document.getElementById("myModal");
-    const btn = document.getElementById("openModalBtn");
-    const closeBtn = document.querySelector(".close");
+// Sélection des éléments
+const modal = document.getElementById("myModal");
+const btn = document.getElementById("openModalBtn");
+const closeBtn = document.querySelector(".close");
 
-    // Ouvrir le modal
-    btn.onclick = function() {
-      modal.style.display = "block";
-    }
+// Ouvrir le modal
+btn.onclick = function () {
+    modal.style.display = "block";
+}
 
-    // Fermer quand on clique sur la croix
-    closeBtn.onclick = function() {
-      modal.style.display = "none";
-    }
+// Fermer quand on clique sur la croix
+closeBtn.onclick = function () {
+    modal.style.display = "none";
+}
 
-    // Fermer quand on clique en dehors de l'image
-    window.onclick = function(event) {
-      if (event.target === modal) {
+// Fermer quand on clique en dehors de l'image
+window.onclick = function (event) {
+    if (event.target === modal) {
         modal.style.display = "none";
-      }
     }
+}
 
 function redirectToPage() {
-     savePageContentById('page1');
+    savePageContentById('page1');
     window.location.href = 'person.html';
 }
 
 window.onbeforeunload = function () {
-     savePageContentById('page1');
+    savePageContentById('page1');
 }
