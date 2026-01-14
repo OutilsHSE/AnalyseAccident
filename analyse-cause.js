@@ -19,6 +19,20 @@ window.onload = function () {
   }*/
 }
 
+window.onload = function () {
+     const hipo = localStorage.getItem('HIPO');
+     const analyse_approfondie= document.getElementById("analyse_approfondie");
+
+    
+    if( hipo == 'true') {
+        analyse_approfondie.style.display = 'block';
+    }
+    else
+    { 
+         analyse_approfondie.style.display = 'none';
+    }
+
+}
 
 const photoInput = document.getElementById('photo-input');
 const photoContainer = document.getElementById('photo-container');

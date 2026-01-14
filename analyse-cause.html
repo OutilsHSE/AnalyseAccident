@@ -7,6 +7,7 @@
     <title>Analyse accident</title>
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="analyse-cause.css">
+    <link rel="stylesheet" href="person.css">
     <script src="global.js"></script>
 </head>
 
@@ -62,6 +63,109 @@
             <td> <textarea type="text" class="cause-input"></textarea></td>
             </tbody>
         </table>
+                       <div id="analyse_approfondie" style="display: none;">
+                <h4 style="text-decoration:underline;"> ANALYSE DES FACTEURS HUMAINS ET ORGANISATIONNELS :</h4>
+                <fieldset>
+                    <div class="description-accident">
+                        <span>1 - Mode opératoire (tâches, accès, circulation…)</span>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="description-accident">
+                        <span>2 - Moyens humains mis en place (le jour de l’événement) </span>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Ancienneté des victimes dans leurs fonctions / formations et qualifications / culture HSE
+                            des collaborateurs :</label>
+                         <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>EPI requis / utilisés :</label>
+                         <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Autres moyens de protections requis / utilisés :</label>
+                         <textarea></textarea>
+                    </div>
+
+                    <div class="description-accident page-section page-break">
+                    <div class="description-accident" style="padding-top: 5px;">
+                        <span>3 – Moyens organisationnels mis en place (le jour de l’événement)</span>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>SSE (PPSPS / PDP) :</label>
+                         <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Analyse des risques en amont (Risque intégré dans le DU) :</label>
+                         <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Permis de travail spécifique :</label>
+                         <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Vigiminutes réalisées :</label>
+                         <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Accueils SSE des intervenants :</label>
+                        <textarea></textarea>
+                    </div>
+                </div>
+                    <div class="description-accident" style="padding-top: 5px;">
+                        <span>4 – Moyens techniques mis en place (le jour de l’événement)</span>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Équipements soumis à VGP :</label>
+                         <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Âge des équipements concernés :</label>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Dysfonctionnements constatés :
+
+                        </label>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Réparations effectuées :</label>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Incidents antérieurs :</label>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Maintenance réalisée récemment :</label>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Modification des processus ou de la procédure d’intervention :</label>
+                       <textarea></textarea>
+                    </div>
+                </fieldset>
+                </div>  
         </div>
         <button class="next-button" onclick="redirectToPage()">Suivant</button>
 
@@ -91,6 +195,7 @@ l’événement. Les causes profondes sont les échecs fondamentaux qui, lorsqu�
 correctement traitées, empêcheront la répétition de l’incident.
                 </p>
             </div>
+
         
         <script src="analyse-cause.js"></script>
 </body>
