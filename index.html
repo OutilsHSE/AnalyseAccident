@@ -2260,7 +2260,7 @@
     }
 
     /* ===== Appel IA (proxy Apps Script → Groq) ===== */
-    const AI_ENDPOINT = ''; // ← colle ici l'URL de ton Web App Apps Script après déploiement
+    const AI_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwDWgB2wLj4em8WfhluqGKv-3zA_oi3pVDRjjH3oNOg8oegdGdh8Uhew5_pPalKAIyAsg/exec'; // ← colle ici l'URL de ton Web App Apps Script après déploiement
     async function callAI(payload) {
       if (!AI_ENDPOINT) throw new Error('endpoint-manquant');
       const res = await fetch(AI_ENDPOINT, { method: 'POST', body: JSON.stringify(payload) });
