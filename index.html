@@ -953,6 +953,14 @@
     .ai-chat-input { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--line-soft); }
     .ai-chat-input input { flex: 1; }
 
+    .data-toolbar { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; padding: 8px 12px; background: #fff; border: 1px solid var(--line-soft); border-radius: 10px; box-shadow: var(--shadow); flex-wrap: wrap; }
+    .data-toolbar .dt-spacer { flex: 1; }
+    .data-toolbar .btn-sm { padding: 5px 11px; font-size: 12px; }
+    .save-status { font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+    .save-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #43a047; }
+    .save-status.saving::before { background: #fb8c00; }
+    .save-status.off::before { background: #bbb; }
+
     .hidden {
       display: none !important;
     }
@@ -978,6 +986,15 @@
   </header>
 
   <main id="report-root">
+
+    <div class="data-toolbar no-print">
+      <span class="save-status" id="save-status">Sauvegarde auto activée</span>
+      <span class="dt-spacer"></span>
+      <button class="btn btn-ghost btn-sm" type="button" id="btn-export">💾 Exporter (.json)</button>
+      <label class="btn btn-ghost btn-sm" for="import-file" style="margin:0;cursor:pointer;">📂 Importer</label>
+      <input type="file" id="import-file" accept="application/json,.json" style="display:none;">
+      <button class="btn btn-ghost btn-sm" type="button" id="btn-reset-all">🗑 Nouveau</button>
+    </div>
 
     <!-- ======================= STEP 1 ======================= -->
     <section class="step-panel active" data-step="1">
@@ -2087,6 +2104,38 @@
       buildFigure('lm-svg-face', 'face', FRONT_IMG, 427, 1084, HS_FACE);
       buildFigure('lm-svg-dos', 'dos', BACK_IMG, 423, 1081, HS_DOS);
       window.getLesionData = () => entries.map(e => ({ zone: e.part, vue: e.view, lesions: e.keys.map(k => byKey[k].label) }));
+
+      function placeEntry(view, part, keys, x, y) {
+        const id = ++uid;
+        entries.push({ id, view, part, keys, x, y });
+        if (x != null && y != null) {
+          const svg = $(view === 'dos' ? 'lm-svg-dos' : 'lm-svg-face');
+          const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'lm-marker'); g.dataset.id = id;
+          g.innerHTML = markerMarkup(x, y, keys);
+          const ti = document.createElementNS(NS, 'title'); ti.textContent = part + " \u2014 " + keys.map(k => byKey[k].label).join(', '); g.appendChild(ti);
+          g.addEventListener('click', () => removeEntry(id));
+          svg.appendChild(g);
+        }
+        return id;
+      }
+      window.getLesionState = () => ({
+        noInjury: $('lm-no-injury').checked,
+        wholeBody: $('lm-whole-body').checked,
+        entries: entries.map(e => ({ view: e.view, part: e.part, keys: e.keys, x: e.x, y: e.y, whole: e.id === wholeBodyId }))
+      });
+      window.setLesionState = (st) => {
+        if (!st) return;
+        entries.length = 0; wholeBodyId = null;
+        document.querySelectorAll('.lm-marker').forEach(m => m.remove());
+        (st.entries || []).forEach(e => {
+          if (e.whole) wholeBodyId = placeEntry(e.view, e.part, e.keys, null, null);
+          else placeEntry(e.view, e.part, e.keys, e.x, e.y);
+        });
+        $('lm-whole-body').checked = !!st.wholeBody;
+        $('lm-no-injury').checked = !!st.noInjury;
+        $('lm-layout').classList.toggle('lm-disabled', !!st.noInjury);
+        renderList();
+      };
     })();
 
     /* ===== Pas de témoin ===== */
@@ -2152,6 +2201,13 @@
 
       // sélection initiale (humain + premier type)
       chooseCat(CARDS.cat[0]);
+
+      window.natureRestore = (catVal, typeVal) => {
+        const catCard = CARDS.cat.find(c => c.value === catVal);
+        if (catCard) chooseCat(catCard);
+        const tm = TYPE_MAP[catVal];
+        if (tm && typeVal) { const tc = tm[1].find(c => c.value === typeVal); if (tc) chooseType(tc); }
+      };
     })();
 
     /* ===== Arbre des causes (éditeur visuel horizontal, méthode INRS) ===== */
@@ -2260,7 +2316,7 @@
     }
 
     /* ===== Appel IA (proxy Apps Script → Groq) ===== */
-    const AI_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwDWgB2wLj4em8WfhluqGKv-3zA_oi3pVDRjjH3oNOg8oegdGdh8Uhew5_pPalKAIyAsg/exec'; // ← colle ici l'URL de ton Web App Apps Script après déploiement
+    const AI_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwDWgB2wLj4em8WfhluqGKv-3zA_oi3pVDRjjH3oNOg8oegdGdh8Uhew5_pPalKAIyAsg/exec';
     async function callAI(payload) {
       if (!AI_ENDPOINT) throw new Error('endpoint-manquant');
       const res = await fetch(AI_ENDPOINT, { method: 'POST', body: JSON.stringify(payload) });
@@ -2292,7 +2348,94 @@
     });
     document.getElementById('ai-chat-text').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('ai-chat-send').click(); });
 
+    /* ===== Sauvegarde / restauration ===== */
+    const SAVE_KEY = 'analyse-accident-v1';
+    function isPersistable(el) {
+      if (el.type === 'file' || el.id === 'import-file') return false;
+      if (el.closest('#lm-palette') || el.closest('#cause-tree') || el.closest('.ai-chat') || el.closest('.regle-options')) return false;
+      if (el.closest('#actions-body') || el.closest('#barrieres-body') || el.closest('#emargement-body')) return false;
+      return true;
+    }
+    const staticControls = () => [...document.querySelectorAll('#report-root input, #report-root textarea, #report-root select')].filter(isPersistable);
+    const cVal = c => (c.type === 'checkbox' || c.type === 'radio') ? (c.checked ? 1 : 0) : c.value;
+    const rowData = tb => [...document.querySelectorAll('#' + tb + ' tr')].map(tr => [...tr.querySelectorAll('input,textarea,select')].map(cVal));
+    function fillRow(tr, vals) { [...tr.querySelectorAll('input,textarea,select')].forEach((c, i) => { const v = vals[i]; if (v == null) return; if (c.type === 'checkbox' || c.type === 'radio') c.checked = !!v; else c.value = v; }); }
+    function natureState() { const nat = document.getElementById('nature').value; const s = document.getElementById({ humain: 'select-humain', environnement: 'select-environnement', industriel: 'select-industriel' }[nat]); return { cat: nat, type: s ? s.value : '' }; }
+
+    function serializeAll() {
+      const controls = staticControls();
+      return {
+        v: 1, n: controls.length, statics: controls.map(cVal),
+        nature: natureState(), regle: document.getElementById('regle-selected').dataset.value,
+        actions: rowData('actions-body'), barrieres: rowData('barrieres-body'), emargement: rowData('emargement-body'),
+        sigs: [...document.querySelectorAll('#emargement-body canvas')].map(c => { try { return c.toDataURL(); } catch (e) { return ''; } }),
+        lesions: window.getLesionState ? window.getLesionState() : null,
+        arbre: window.ct ? ct.toJSON() : null
+      };
+    }
+
+    function restoreAll(d) {
+      if (!d) return;
+      try {
+        const controls = staticControls();
+        if (Array.isArray(d.statics) && d.statics.length === controls.length) {
+          controls.forEach((c, i) => { const v = d.statics[i]; if (v == null) return; if (c.type === 'checkbox' || c.type === 'radio') c.checked = !!v; else c.value = v; });
+        }
+        if (d.nature && window.natureRestore) window.natureRestore(d.nature.cat, d.nature.type);
+        if (d.regle) { const opt = document.querySelector('.regle-opt[data-value="' + d.regle + '"]'); if (opt) opt.click(); }
+        if (Array.isArray(d.actions)) { const b = document.getElementById('actions-body'); b.innerHTML = ''; d.actions.forEach(v => { addActionRow(); fillRow(b.lastElementChild, v); }); renumber(); }
+        if (Array.isArray(d.barrieres)) { const b = document.getElementById('barrieres-body'); b.innerHTML = ''; d.barrieres.forEach(v => { addBarriereRow(); fillRow(b.lastElementChild, v); }); }
+        if (Array.isArray(d.emargement)) {
+          const b = document.getElementById('emargement-body'); b.innerHTML = '';
+          d.emargement.forEach((v, idx) => {
+            addEmargementRow(); fillRow(b.lastElementChild, v);
+            const cv = b.lastElementChild.querySelector('canvas');
+            if (cv && d.sigs && d.sigs[idx]) { const im = new Image(); im.onload = () => cv.getContext('2d').drawImage(im, 0, 0); im.src = d.sigs[idx]; }
+          });
+          if (document.getElementById('convocation-chk').checked) document.getElementById('emargement-wrap').classList.remove('hidden');
+        }
+        if (d.lesions && window.setLesionState) window.setLesionState(d.lesions);
+        if (d.arbre && window.ct) ct.load(d.arbre);
+        checkHIPO();
+      } catch (e) { console.warn('Restauration partielle :', e); }
+    }
+
+    let saveTimer = null;
+    function setSaveStatus(txt, cls) { const el = document.getElementById('save-status'); el.textContent = txt; el.className = 'save-status' + (cls ? ' ' + cls : ''); }
+    function doSave() {
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(serializeAll())); setSaveStatus('Enregistré ' + new Date().toLocaleTimeString().slice(0, 5)); }
+      catch (e) { setSaveStatus('Sauvegarde auto indisponible', 'off'); }
+    }
+    function scheduleSave() { setSaveStatus('Enregistrement…', 'saving'); clearTimeout(saveTimer); saveTimer = setTimeout(doSave, 700); }
+    document.addEventListener('input', scheduleSave, true);
+    document.addEventListener('change', scheduleSave, true);
+    document.getElementById('report-root').addEventListener('click', e => { if (e.target.closest('#cause-tree, .lm-lesion, .lm-hotspot, .lm-marker, .picto-dd-opt, .regle-opt, .seg')) scheduleSave(); });
+    window.addEventListener('beforeunload', doSave);
+
+    // Export / Import / Nouveau
+    document.getElementById('btn-export').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(serializeAll(), null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      const id = (document.getElementById('report-id').value || 'analyse-accident').replace(/[^\w-]/g, '_');
+      a.download = id + '.json'; a.click(); URL.revokeObjectURL(a.href);
+    });
+    document.getElementById('import-file').addEventListener('change', function () {
+      const f = this.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = () => { try { restoreAll(JSON.parse(r.result)); doSave(); setSaveStatus('Fichier importé ✓'); } catch (e) { setSaveStatus('Fichier illisible', 'off'); } };
+      r.readAsText(f); this.value = '';
+    });
+    document.getElementById('btn-reset-all').addEventListener('click', () => {
+      if (!confirm('Effacer toute la saisie et démarrer une nouvelle analyse ?')) return;
+      try { localStorage.removeItem(SAVE_KEY); } catch (e) { }
+      location.reload();
+    });
+
     goStep(1);
+
+    // Restauration au chargement
+    try { const saved = localStorage.getItem(SAVE_KEY); if (saved) restoreAll(JSON.parse(saved)); }
+    catch (e) { console.warn(e); }
   </script>
 </body>
 
