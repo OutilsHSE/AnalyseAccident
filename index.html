@@ -260,6 +260,7 @@
     textarea {
       resize: vertical;
       min-height: 70px;
+      overflow: hidden;
     }
 
     .grid {
@@ -918,14 +919,10 @@
     .tree-hint { font-size: 12px; color: var(--muted); }
     .tree-scroll { overflow-x: auto; padding: 10px 0 4px; border: 1px dashed var(--line); border-radius: 10px; background: #fbfdff; }
 
-    .cause-tree { display: inline-flex; align-items: center; min-width: 100%; padding: 10px 16px; direction: ltr; }
-    .ac-sub { display: flex; flex-direction: row; align-items: center; }
-    .ac-children { display: flex; flex-direction: column; justify-content: center; gap: 14px; position: relative; }
-    .ac-children.multi { border-right: 2px solid var(--line); }
-    .ac-child { display: flex; align-items: center; }
-    .ac-child::after { content: ''; width: 16px; height: 2px; background: var(--line); flex: 0 0 auto; }
-    .ac-elbow { width: 18px; height: 2px; background: var(--line); flex: 0 0 auto; }
-    .ac-node { display: inline-flex; flex-direction: column; gap: 6px; border: 1.5px solid var(--line); border-radius: 9px; padding: 8px 10px; background: #fff; min-width: 130px; max-width: 200px; box-shadow: 0 1px 2px rgba(20,40,60,.06); }
+    .cause-tree { position: relative; }
+    .ac-svg { position: absolute; top: 0; left: 0; pointer-events: none; }
+    .ac-line { fill: none; stroke: var(--line); stroke-width: 2; }
+    .ac-node { position: absolute; transform: translateY(-50%); box-sizing: border-box; width: 190px; display: flex; flex-direction: column; gap: 6px; border: 1.5px solid var(--line); border-radius: 9px; padding: 8px 10px; background: #fff; box-shadow: 0 1px 2px rgba(20,40,60,.06); }
     .ac-node.t-ultime { background: #fdecec; border-color: #e53935; }
     .ac-node.t-variation { background: #fff4e5; border-color: #fb8c00; }
     .ac-node.t-permanent { background: var(--cdes-sky-soft); border-color: var(--cdes-blue); }
@@ -961,6 +958,13 @@
     .save-status.saving::before { background: #fb8c00; }
     .save-status.off::before { background: #bbb; }
 
+    .req-star { color: #e53935; font-weight: bold; }
+    .invalid { border-color: #e53935 !important; box-shadow: 0 0 0 2px rgba(229,57,53,.16) !important; }
+    .seg.invalid, .grav-scale.invalid { outline: 2px solid #e53935; outline-offset: 2px; border-radius: 8px; box-shadow: none !important; }
+    .toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #c62828; color: #fff; padding: 11px 18px; border-radius: 10px; font-size: 13px; font-weight: bold; box-shadow: 0 6px 20px rgba(0,0,0,.2); z-index: 3000; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 90%; text-align: center; }
+    .toast.show { opacity: 1; }
+    .toast.ok { background: #2e7d32; }
+
     .hidden {
       display: none !important;
     }
@@ -990,9 +994,10 @@
     <div class="data-toolbar no-print">
       <span class="save-status" id="save-status">Sauvegarde auto activée</span>
       <span class="dt-spacer"></span>
-      <button class="btn btn-ghost btn-sm" type="button" id="btn-export">💾 Exporter (.json)</button>
+      <button class="btn btn-ghost btn-sm" type="button" id="btn-export-json">💾 Exporter (.json)</button>
       <label class="btn btn-ghost btn-sm" for="import-file" style="margin:0;cursor:pointer;">📂 Importer</label>
       <input type="file" id="import-file" accept="application/json,.json" style="display:none;">
+      <button class="btn btn-ghost btn-sm" type="button" id="btn-demo">🧪 Exemple</button>
       <button class="btn btn-ghost btn-sm" type="button" id="btn-reset-all">🗑 Nouveau</button>
     </div>
 
@@ -1021,8 +1026,8 @@
         <p class="sub">Identification de l'événement accidentel.</p>
         <div class="grid cols-4">
           <div>
-            <label class="field">Chantier</label>
-            <input type="text" id="chantier" placeholder="Nom du chantier">
+            <label class="field">Chantier <span class="req-star">*</span></label>
+            <input type="text" id="chantier" data-req placeholder="Nom du chantier">
           </div>
           <div>
             <label class="field">Date de l'accident</label>
@@ -1052,7 +1057,7 @@
         <div class="grid cols-3" style="margin-top:14px;">
           <div>
             <label class="field">Météo</label>
-            <input type="text" placeholder="Ex. pluie, vent…">
+            <input type="text" id="meteo" placeholder="Ex. pluie, vent…">
           </div>
           <div>
             <label class="field">Éclairage</label>
@@ -1125,8 +1130,8 @@
           <input type="text" id="input-autre" class="hidden" placeholder="Préciser la nature">
         </div>
 
-        <div class="block-title">Résumé de l'événement</div>
-        <textarea id="resume" placeholder="Décrire brièvement ce qui s'est passé…" style="min-height:90px;"></textarea>
+        <div class="block-title">Résumé de l'événement <span class="req-star">*</span></div>
+        <textarea id="resume" data-req placeholder="Décrire brièvement ce qui s'est passé…" style="min-height:90px;"></textarea>
 
         <div class="block-title">Cotation de la gravité</div>
         <div class="grid cols-2">
@@ -1141,8 +1146,8 @@
             </div>
           </div>
           <div>
-            <label class="field">Gravité potentielle</label>
-            <div class="grav-scale" id="grav-potentielle" style="margin-top:8px;">
+            <label class="field">Gravité potentielle <span class="req-star">*</span></label>
+            <div class="grav-scale" id="grav-potentielle" data-req style="margin-top:8px;">
               <!-- filled by JS -->
             </div>
           </div>
@@ -1184,12 +1189,12 @@
 
         <div class="block-title">Personne blessée</div>
         <div class="grid cols-4">
-          <div><label class="field">Prénom</label><input type="text"></div>
-          <div><label class="field">Nom</label><input type="text"></div>
-          <div><label class="field">Fonction</label><input type="text"></div>
+          <div><label class="field">Prénom</label><input type="text" id="victime-prenom"></div>
+          <div><label class="field">Nom</label><input type="text" id="victime-nom"></div>
+          <div><label class="field">Fonction</label><input type="text" id="victime-fonction"></div>
           <div>
             <label class="field">Ancienneté au poste</label>
-            <select>
+            <select id="victime-anciennete">
               <option>Nouveau collaborateur</option>
               <option>Inférieur à 1 an</option>
               <option>Supérieur à 1 an</option>
@@ -1201,9 +1206,9 @@
         <div class="block-title">Témoin(s)</div>
         <label class="check" style="margin-bottom:12px;"><input type="checkbox" id="no-temoin"> Pas de témoin</label>
         <div class="grid cols-3" id="temoin-fields">
-          <div><label class="field">Prénom</label><input type="text"></div>
-          <div><label class="field">Nom</label><input type="text"></div>
-          <div><label class="field">Fonction</label><input type="text"></div>
+          <div><label class="field">Prénom</label><input type="text" id="temoin-prenom"></div>
+          <div><label class="field">Nom</label><input type="text" id="temoin-nom"></div>
+          <div><label class="field">Fonction</label><input type="text" id="temoin-fonction"></div>
         </div>
       </div>
 
@@ -1490,39 +1495,39 @@
 
         <div class="foh-section">
           <div class="foh-head"><span class="foh-num">1</span> Mode opératoire <span class="foh-sub">tâches, accès, circulation…</span></div>
-          <textarea></textarea>
+          <textarea id="foh-mode"></textarea>
         </div>
 
         <div class="foh-section">
           <div class="foh-head"><span class="foh-num">2</span> Moyens humains <span class="foh-sub">le jour de l'événement</span></div>
           <div class="grid cols-3">
-            <div><label class="field">Ancienneté / formations / culture HSE</label><textarea></textarea></div>
-            <div><label class="field">EPI requis / utilisés</label><textarea></textarea></div>
-            <div><label class="field">Autres protections requises / utilisées</label><textarea></textarea></div>
+            <div><label class="field">Ancienneté / formations / culture HSE</label><textarea id="foh-anciennete"></textarea></div>
+            <div><label class="field">EPI requis / utilisés</label><textarea id="foh-epi"></textarea></div>
+            <div><label class="field">Autres protections requises / utilisées</label><textarea id="foh-autres"></textarea></div>
           </div>
         </div>
 
         <div class="foh-section">
           <div class="foh-head"><span class="foh-num">3</span> Moyens organisationnels</div>
           <div class="grid cols-3">
-            <div><label class="field">SSE (PPSPS / PDP)</label><textarea></textarea></div>
-            <div><label class="field">Analyse des risques amont (risque intégré au DU)</label><textarea></textarea></div>
-            <div><label class="field">Permis de travail spécifique</label><textarea></textarea></div>
-            <div><label class="field">Vigiminutes réalisées</label><textarea></textarea></div>
-            <div><label class="field">Accueils SSE des intervenants</label><textarea></textarea></div>
+            <div><label class="field">SSE (PPSPS / PDP)</label><textarea id="foh-sse"></textarea></div>
+            <div><label class="field">Analyse des risques amont (risque intégré au DU)</label><textarea id="foh-amont"></textarea></div>
+            <div><label class="field">Permis de travail spécifique</label><textarea id="foh-permis"></textarea></div>
+            <div><label class="field">Vigiminutes réalisées</label><textarea id="foh-vigi"></textarea></div>
+            <div><label class="field">Accueils SSE des intervenants</label><textarea id="foh-accueil"></textarea></div>
           </div>
         </div>
 
         <div class="foh-section">
           <div class="foh-head"><span class="foh-num">4</span> Moyens techniques</div>
           <div class="grid cols-3">
-            <div><label class="field">Équipements soumis à VGP</label><textarea></textarea></div>
-            <div><label class="field">Âge des équipements concernés</label><textarea></textarea></div>
-            <div><label class="field">Dysfonctionnements constatés</label><textarea></textarea></div>
-            <div><label class="field">Réparations effectuées</label><textarea></textarea></div>
-            <div><label class="field">Incidents antérieurs</label><textarea></textarea></div>
-            <div><label class="field">Maintenance réalisée récemment</label><textarea></textarea></div>
-            <div><label class="field">Modification des processus / procédure</label><textarea></textarea></div>
+            <div><label class="field">Équipements soumis à VGP</label><textarea id="foh-vgp"></textarea></div>
+            <div><label class="field">Âge des équipements concernés</label><textarea id="foh-age"></textarea></div>
+            <div><label class="field">Dysfonctionnements constatés</label><textarea id="foh-dysf"></textarea></div>
+            <div><label class="field">Réparations effectuées</label><textarea id="foh-repar"></textarea></div>
+            <div><label class="field">Incidents antérieurs</label><textarea id="foh-incidents"></textarea></div>
+            <div><label class="field">Maintenance réalisée récemment</label><textarea id="foh-maint"></textarea></div>
+            <div><label class="field">Modification des processus / procédure</label><textarea id="foh-modif"></textarea></div>
           </div>
         </div>
       </div>
@@ -1596,12 +1601,14 @@
 
   </main>
 
+  <div class="toast" id="toast"></div>
+
   <!-- footer nav -->
   <div class="footer-nav no-print">
     <div class="inner">
       <button class="btn btn-ghost" id="btn-prev" onclick="goStep(currentStep-1)">← Précédent</button>
       <div class="spacer">Étape <b id="cur">1</b> / 5</div>
-      <button class="btn btn-primary" id="btn-next" onclick="goStep(currentStep+1)">Suivant →</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Suivant →</button>
       <button class="btn btn-primary hidden" id="btn-export" onclick="exportPDF()">⬇ Exporter en PDF</button>
     </div>
   </div>
@@ -1652,6 +1659,7 @@
       document.getElementById('btn-prev').style.visibility = n === 1 ? 'hidden' : 'visible';
       document.getElementById('btn-next').classList.toggle('hidden', n === TOTAL);
       document.getElementById('btn-export').classList.toggle('hidden', n !== TOTAL);
+      if (typeof growAll === 'function') growAll();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     document.querySelectorAll('.step-pill').forEach(p => {
@@ -1940,6 +1948,11 @@
 
     /* ---------------- PDF export (phase 3 : à affiner) ---------------- */
     function exportPDF() {
+      const panel = document.querySelector('.step-panel.active');
+      if (panel && typeof validateStep === 'function') {
+        const miss = validateStep(panel);
+        if (miss.length) { toast('Complète les champs obligatoires en rouge avant d\'exporter.'); miss[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      }
       // Placeholder basique — la fidélité du rendu sera travaillée en phase 3.
       window.print();
     }
@@ -2239,24 +2252,40 @@
         box.appendChild(tag); box.appendChild(lbl); box.appendChild(acts);
         return box;
       }
-      // sous-arbre : [antécédents à gauche] — [coude] — [nœud à droite]
-      function subEl(node) {
-        const sub = document.createElement('div'); sub.className = 'ac-sub';
-        if (node.children.length) {
-          const kids = document.createElement('div');
-          kids.className = 'ac-children' + (node.children.length > 1 ? ' multi' : '');
-          node.children.forEach(c => {
-            const wrap = document.createElement('div'); wrap.className = 'ac-child';
-            wrap.appendChild(subEl(c));
-            kids.appendChild(wrap);
-          });
-          const elbow = document.createElement('div'); elbow.className = 'ac-elbow';
-          sub.appendChild(kids); sub.appendChild(elbow);
-        }
-        sub.appendChild(nodeBox(node));
-        return sub;
+      // ---- placement : colonnes par profondeur, y = milieu des enfants ----
+      const NS = 'http://www.w3.org/2000/svg';
+      const ROW = 118, COL = 240, BOXW = 190;
+      function layout() {
+        let leaf = 0, maxD = 0;
+        (function assign(n, d) {
+          n._d = d; if (d > maxD) maxD = d;
+          if (!n.children.length) { n._y = leaf * ROW + ROW / 2; leaf++; }
+          else { n.children.forEach(c => assign(c, d + 1)); n._y = (n.children[0]._y + n.children[n.children.length - 1]._y) / 2; }
+        })(root, 0);
+        (function setX(n) { n._x = (maxD - n._d) * COL; n.children.forEach(setX); })(root);
+        return { w: maxD * COL + BOXW + 4, h: Math.max(1, leaf) * ROW };
       }
-      function render() { const c = document.getElementById('cause-tree'); c.innerHTML = ''; c.appendChild(subEl(root)); }
+      function render() {
+        const c = document.getElementById('cause-tree'); c.innerHTML = '';
+        const dim = layout();
+        c.style.width = dim.w + 'px'; c.style.height = dim.h + 'px';
+        const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'ac-svg'); svg.setAttribute('width', dim.w); svg.setAttribute('height', dim.h);
+        (function draw(n) {
+          n.children.forEach(ch => {
+            const px = n._x, py = n._y, cx = ch._x + BOXW, cy = ch._y, mid = (px + cx) / 2;
+            const p = document.createElementNS(NS, 'path');
+            p.setAttribute('class', 'ac-line');
+            p.setAttribute('d', `M ${px} ${py} L ${mid} ${py} L ${mid} ${cy} L ${cx} ${cy}`);
+            svg.appendChild(p); draw(ch);
+          });
+        })(root);
+        c.appendChild(svg);
+        (function place(n) {
+          const box = nodeBox(n);
+          box.style.left = n._x + 'px'; box.style.top = n._y + 'px';
+          c.appendChild(box); n.children.forEach(place);
+        })(root);
+      }
       function reset() { root = newRoot(); render(); }
       function load(obj) {
         seq = 0;
@@ -2313,6 +2342,7 @@
         });
         renumber();
       }
+      growAll();
     }
 
     /* ===== Appel IA (proxy Apps Script → Groq) ===== */
@@ -2347,6 +2377,11 @@
       aiChatMsg(t, 'user'); inp.value = ''; runAI(t);
     });
     document.getElementById('ai-chat-text').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('ai-chat-send').click(); });
+
+    /* ===== Zones de texte auto-extensibles ===== */
+    function autoGrow(ta) { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 2) + 'px'; }
+    function growAll() { document.querySelectorAll('textarea').forEach(autoGrow); }
+    document.addEventListener('input', e => { if (e.target.tagName === 'TEXTAREA') autoGrow(e.target); }, true);
 
     /* ===== Sauvegarde / restauration ===== */
     const SAVE_KEY = 'analyse-accident-v1';
@@ -2397,6 +2432,7 @@
         if (d.lesions && window.setLesionState) window.setLesionState(d.lesions);
         if (d.arbre && window.ct) ct.load(d.arbre);
         checkHIPO();
+        growAll();
       } catch (e) { console.warn('Restauration partielle :', e); }
     }
 
@@ -2413,7 +2449,7 @@
     window.addEventListener('beforeunload', doSave);
 
     // Export / Import / Nouveau
-    document.getElementById('btn-export').addEventListener('click', () => {
+    document.getElementById('btn-export-json').addEventListener('click', () => {
       const blob = new Blob([JSON.stringify(serializeAll(), null, 2)], { type: 'application/json' });
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
       const id = (document.getElementById('report-id').value || 'analyse-accident').replace(/[^\w-]/g, '_');
@@ -2422,7 +2458,13 @@
     document.getElementById('import-file').addEventListener('change', function () {
       const f = this.files[0]; if (!f) return;
       const r = new FileReader();
-      r.onload = () => { try { restoreAll(JSON.parse(r.result)); doSave(); setSaveStatus('Fichier importé ✓'); } catch (e) { setSaveStatus('Fichier illisible', 'off'); } };
+      r.onload = () => {
+        try {
+          const j = JSON.parse(r.result);
+          if (j && j.friendly && window.applyFriendly) applyFriendly(j); else restoreAll(j);
+          doSave(); setSaveStatus('Fichier importé ✓');
+        } catch (e) { setSaveStatus('Fichier illisible', 'off'); }
+      };
       r.readAsText(f); this.value = '';
     });
     document.getElementById('btn-reset-all').addEventListener('click', () => {
@@ -2431,11 +2473,110 @@
       location.reload();
     });
 
+    /* ===== Validation des champs obligatoires ===== */
+    let toastTimer = null;
+    function toast(msg, ok) {
+      const t = document.getElementById('toast'); t.textContent = msg;
+      t.classList.toggle('ok', !!ok); t.classList.add('show');
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+    function clearInvalid(scope) { (scope || document).querySelectorAll('.invalid').forEach(e => e.classList.remove('invalid')); }
+    function validateStep(panel) {
+      clearInvalid(panel);
+      const miss = [];
+      panel.querySelectorAll('[data-req]').forEach(el => {
+        if (el.offsetParent === null) return;
+        const grp = el.classList.contains('grav-scale');
+        const empty = grp ? !el.querySelector('input:checked') : !String(el.value || '').trim();
+        if (empty) { el.classList.add('invalid'); miss.push(el); }
+      });
+      panel.querySelectorAll('.seg').forEach(seg => {
+        if (seg.offsetParent === null) return;
+        if (!seg.querySelector('input:checked')) { seg.classList.add('invalid'); miss.push(seg); }
+      });
+      return miss;
+    }
+    function nextStep() {
+      const panel = document.querySelector('.step-panel.active');
+      const miss = validateStep(panel);
+      if (miss.length) { toast('Complète les ' + miss.length + ' champ(s) obligatoire(s) en rouge.'); miss[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      goStep(currentStep + 1);
+    }
+    document.addEventListener('input', e => { e.target.classList.remove('invalid'); }, true);
+    document.addEventListener('change', e => {
+      const s = e.target.closest('.seg'); if (s) s.classList.remove('invalid');
+      const g = e.target.closest('.grav-scale'); if (g) g.classList.remove('invalid');
+    }, true);
+
+    /* ===== Chargement d'un jeu de données « friendly » (exemples / import) ===== */
+    function applyFriendly(d) {
+      const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
+      if (d.fields) Object.keys(d.fields).forEach(id => set(id, d.fields[id]));
+      if (d.checks) Object.keys(d.checks).forEach(id => { const el = document.getElementById(id); if (el) { el.checked = !!d.checks[id]; el.dispatchEvent(new Event('change')); } });
+      if (d.nature && window.natureRestore) window.natureRestore(d.nature.cat, d.nature.type);
+      if (d.regle) { const o = document.querySelector('.regle-opt[data-value="' + d.regle + '"]'); if (o) o.click(); }
+      if (d.gravite) ['reelle', 'potentielle'].forEach(k => { if (d.gravite[k]) { const r = document.querySelector('#grav-' + k + ' input[value="' + d.gravite[k] + '"]'); if (r) r.checked = true; } });
+      if (d.segs) Object.keys(d.segs).forEach(name => { const r = document.querySelector('input[name="' + name + '"][value="' + d.segs[name] + '"]'); if (r) r.checked = true; });
+      if (d.precisions) Object.keys(d.precisions).forEach(block => { const ps = document.querySelectorAll('#' + block + ' .qa-prec'); (d.precisions[block] || []).forEach((v, i) => { if (ps[i]) ps[i].value = v; }); });
+      if (d.lesions && window.setLesionState) window.setLesionState(d.lesions);
+      if (d.arbre && window.ct) ct.load(d.arbre);
+      checkHIPO(); growAll(); clearInvalid(document); doSave(); goStep(1);
+    }
+    window.applyFriendly = applyFriendly;
+
+    /* ===== Exemple (cas réel : aqueduc Hauconcourt) ===== */
+    const DEMO = {
+      friendly: true,
+      fields: {
+        redacteur: 'Justin HERVELIN', chantier: 'Aqueduc Hauconcourt', 'accident-date': '2026-07-07', 'accident-heure': '18:27',
+        collaborateur: 'Quentin BOUCQ', 'loc-precise': 'Bord de berge Moselle', 'tache-phase': "Nettoyage d'une pompe hydraulique", meteo: 'Ensoleillé',
+        resume: "Le collaborateur nettoyait une pompe hydraulique qui servait au pompage de l'aqueduc afin de la ranger. En ramassant le tuyau d'aspiration de la pompe dans le canal, le collaborateur s'est entaillé l'index gauche en heurtant une rangée de palplanches immergée dans le canal. Plaie ouverte avec présence de salissure dans la plaie.",
+        'victime-prenom': 'Quentin', 'victime-nom': 'BOUCQ', 'victime-fonction': "Conducteur d'engin", 'victime-anciennete': 'Supérieur à 1 an',
+        'chrono-avant': "Le collaborateur a reçu la consigne de nettoyer et de ranger la pompe hydraulique, qui servait à l'évacuation des eaux résiduelles présentes à l'intérieur de l'aqueduc. Il portait des gants textiles fins pour la manutention.",
+        'chrono-pendant': "Le collaborateur a ramassé le flexible branché à la pompe d'aspiration, tombé dans la Moselle (canal). En le ramassant, il s'est entaillé l'index gauche en heurtant une rangée de palplanches immergée. Plaie ouverte avec présence de salissure.",
+        'chrono-apres': "Premiers soins réalisés par un collègue (désinfection). Saignement important, présence de salissure et de corps étrangers dans la plaie. Le collaborateur s'est rendu seul aux Urgences de Thionville avec son véhicule professionnel (contraire aux règles). Plaie nettoyée mais non recousue pour évacuer les salissures. Vaccin tétanos à jour.",
+        'cause-technique': "Présence de palplanches immergées non signalées dans le canal ; absence de protection des mains adaptée au risque de coupure.",
+        'cause-orga': "Consigne de nettoyage/rangement donnée sans analyse du risque lié au milieu (palplanches immergées) ; règle de déplacement seul vers un service de santé non respectée.",
+        'cause-humain': "Manutention du flexible avec des gants inadaptés ; sous-estimation du risque de coupure dans le canal."
+      },
+      nature: { cat: 'humain', type: 'accident-travail-avec-arret' },
+      regle: 'non',
+      gravite: { reelle: '3', potentielle: '3' },
+      checks: { interim: false, 'no-temoin': true },
+      segs: { 'choix-soin': 'oui', 'choix-transport': 'oui', 'choix-arret': 'oui', 'choix-mission': 'non' },
+      precisions: {
+        soins: [
+          "Premiers soins réalisés sur le chantier (désinfection de la plaie)",
+          "Le collaborateur s'est rendu seul aux Urgences de Thionville",
+          "Arrêt de travail de 3 jours",
+          "Pas de poste aménagé (typologie de la blessure et risque de contamination par rapport à l'activité)"
+        ]
+      },
+      lesions: { noInjury: false, wholeBody: false, entries: [{ view: 'face', part: 'Doigt G', keys: ['coupure'], x: 372, y: 620, whole: false }] },
+      arbre: {
+        label: "Lésion de l'index gauche (coupure)", type: 'ultime', children: [
+          {
+            label: "Heurt contre une palplanche immergée", type: 'variation', children: [
+              { label: "Manutention du tuyau d'aspiration dans le canal", type: 'variation', children: [{ label: "Nettoyage / rangement de la pompe hydraulique", type: 'variation', children: [] }] },
+              { label: "Présence de palplanches immergées dans le canal", type: 'permanent', children: [] }
+            ]
+          },
+          { label: "Insuffisance de protection individuelle", type: 'permanent', children: [{ label: "Gants textiles fins inadaptés à la tâche", type: 'permanent', children: [] }] }
+        ]
+      }
+    };
+    function loadDemo() {
+      if (!confirm("Charger l'exemple ? Cela remplace la saisie en cours.")) return;
+      applyFriendly(DEMO); toast('Exemple chargé', true);
+    }
+    document.getElementById('btn-demo').addEventListener('click', loadDemo);
+
     goStep(1);
 
     // Restauration au chargement
     try { const saved = localStorage.getItem(SAVE_KEY); if (saved) restoreAll(JSON.parse(saved)); }
     catch (e) { console.warn(e); }
+    growAll();
   </script>
 </body>
 
