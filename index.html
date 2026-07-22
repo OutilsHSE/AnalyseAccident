@@ -1687,6 +1687,43 @@
           </div>
         </div>
       </div>
+
+      <div class="card no-print" id="card-flash">
+        <h2>Flash HSE (à animer en QHP)</h2>
+        <p class="sub">Optionnel — génère ton flash PowerPoint (mise en page et couleurs CDES) orienté vers le message clé de l'accident.</p>
+        <div class="ai-bar">
+          <button class="btn btn-primary" type="button" id="btn-flash" onclick="genererFlash()">📊 Générer le flash (IA)</button>
+          <span class="ai-status" id="flash-status"></span>
+        </div>
+        <div id="flash-wrap" class="hidden">
+          <div class="grid cols-2">
+            <div style="grid-column:1 / -1;"><label class="field">Circonstances</label><textarea id="fl-circ"></textarea></div>
+            <div><label class="field">Conséquence 1</label><input type="text" id="fl-cons1"></div>
+            <div><label class="field">Conséquence 2</label><input type="text" id="fl-cons2"></div>
+            <div><label class="field">Conséquence 3</label><input type="text" id="fl-cons3"></div>
+            <div><label class="field">Note (vert, ex. « (arrêt de 3 jours) »)</label><input type="text" id="fl-cons3note"></div>
+            <div><label class="field">Cause principale (mise en évidence)</label><input type="text" id="fl-cause1a"></div>
+            <div><label class="field">Cause principale — suite</label><input type="text" id="fl-cause1b"></div>
+            <div style="grid-column:1 / -1;"><label class="field">Cause secondaire</label><input type="text" id="fl-cause2"></div>
+            <div style="grid-column:1 / -1;"><label class="field">Action de prévention à retenir (message clé)</label><input type="text" id="fl-action"></div>
+            <div><label class="field">RQS — titre</label><input type="text" id="fl-rqstitre"></div>
+            <div><label class="field">RQS — message</label><input type="text" id="fl-rqstxt"></div>
+          </div>
+          <label class="field" style="margin-top:12px;">Illustration du flash <span style="font-weight:normal;color:var(--muted);">(optionnel — sinon la photo de l'analyse est utilisée ; si aucune, espace vierge)</span></label>
+          <input type="file" id="fl-illu" accept="image/*">
+          <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+            <button class="btn btn-primary" type="button" id="btn-flash-dl" onclick="telechargerFlash()">⬇ Télécharger le flash (.pptx)</button>
+            <span id="flash-dl-status" style="font-size:12.5px;align-self:center;"></span>
+          </div>
+          <div class="ai-chat" id="flash-chat">
+            <div class="ai-chat-log" id="flash-chat-log"></div>
+            <div class="ai-chat-input">
+              <input type="text" id="flash-chat-text" placeholder="Orienter : « centre sur les consignes d'urgence », « message plus court »…">
+              <button class="btn btn-primary" type="button" style="padding:8px 14px;" onclick="flashChat()">Envoyer</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -2694,7 +2731,7 @@
         const data = JSON.parse(await r.text());
         if (data.erreur) { st.textContent = 'Erreur : ' + data.erreur; st.className = 'ai-status error'; return; }
         if (data.objet) document.getElementById('courrier-objet').value = data.objet;
-        if (data.corps) document.getElementById('courrier-corps').value = data.corps.replace(/^[ \t]+/gm, '');
+        if (data.corps) document.getElementById('courrier-corps').value = data.corps.replace(/^[ \t\u00a0\u2000-\u200a\u3000]+/gm, '');
         document.getElementById('courrier-wrap').classList.remove('hidden');
         autoGrow(document.getElementById('courrier-corps'));
         st.textContent = 'Projet rédigé ✓'; st.className = 'ai-status';
@@ -2726,7 +2763,7 @@
       const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
       const html =
         '<html><head><meta charset="utf-8"></head>' +
-        '<body style="font-family:Arial;font-size:11pt;line-height:1.5;color:#111;">' +
+        '<body style="font-family:Aptos, Calibri, Arial, sans-serif;font-size:11pt;line-height:1.5;color:#111;">' +
         '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr>' +
         '<td valign="top">' + (logo ? '<img src="' + logo + '" height="64">' : '<b>CDES</b>') + '</td>' +
         '<td valign="top" align="right" style="font-size:10pt;color:#555;">CDES<br>[Adresse expéditeur]<br>[Code postal Ville]</td>' +
@@ -2747,6 +2784,108 @@
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
       const fn = (nom || 'courrier').replace(/[^\w-]/g, '_');
       a.download = 'Courrier_rappel_ordre_' + fn + '.doc'; a.click(); URL.revokeObjectURL(a.href);
+    }
+
+    /* ===== Flash HSE (PPTX) ===== */
+    function collectFlashData() {
+      const val = id => (document.getElementById(id)?.value || '').trim();
+      const regleVal = document.getElementById('regle-selected')?.dataset.value || 'non';
+      return {
+        faits: collectFormData(),
+        personne: { prenom: val('victime-prenom'), nom: val('victime-nom'), fonction: val('victime-fonction') },
+        regleQuiSauve: (regleVal === 'non' || !regleVal) ? '' : ('RQS n°' + regleVal),
+        causes: { technique: val('cause-technique'), organisationnel: val('cause-orga'), humain: val('cause-humain') },
+        actionsPrises: [...document.querySelectorAll('#soins .qa-prec')].map(p => p.value.trim()).filter(Boolean)
+      };
+    }
+    function flashSnapshot() {
+      const v = id => document.getElementById(id).value;
+      return { circonstances: v('fl-circ'), cons1: v('fl-cons1'), cons2: v('fl-cons2'), cons3: v('fl-cons3'), cons3_note: v('fl-cons3note'), cause1a: v('fl-cause1a'), cause1b: v('fl-cause1b'), cause2: v('fl-cause2'), action: v('fl-action'), rqs_titre: v('fl-rqstitre'), rqs_txt: v('fl-rqstxt') };
+    }
+    async function flashCall(instruction) {
+      const st = document.getElementById('flash-status');
+      if (!AI_ENDPOINT) { st.textContent = '⚠ Endpoint IA non configuré.'; st.className = 'ai-status error'; return; }
+      st.textContent = 'Rédaction en cours…'; st.className = 'ai-status working';
+      const wrapVisible = !document.getElementById('flash-wrap').classList.contains('hidden');
+      const payload = { action: 'flash', donnees: collectFlashData(), flash: wrapVisible ? JSON.stringify(flashSnapshot()) : '', instruction: instruction || '' };
+      try {
+        const r = await fetch(AI_ENDPOINT, { method: 'POST', body: JSON.stringify(payload) });
+        const data = JSON.parse(await r.text());
+        if (data.erreur) { st.textContent = 'Erreur : ' + data.erreur; st.className = 'ai-status error'; return; }
+        const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
+        set('fl-circ', data.circonstances); set('fl-cons1', data.cons1); set('fl-cons2', data.cons2); set('fl-cons3', data.cons3); set('fl-cons3note', data.cons3_note);
+        set('fl-cause1a', data.cause1a); set('fl-cause1b', data.cause1b); set('fl-cause2', data.cause2); set('fl-action', data.action);
+        set('fl-rqstitre', data.rqs_titre); set('fl-rqstxt', data.rqs_txt);
+        document.getElementById('flash-wrap').classList.remove('hidden'); growAll();
+        st.textContent = 'Contenu généré ✓'; st.className = 'ai-status';
+        if (data.commentaire) { const log = document.getElementById('flash-chat-log'); const dv = document.createElement('div'); dv.className = 'ai-msg bot'; dv.textContent = data.commentaire; log.appendChild(dv); log.scrollTop = log.scrollHeight; }
+      } catch (e) { st.textContent = 'Erreur : ' + e.message; st.className = 'ai-status error'; }
+    }
+    function genererFlash() {
+      if (!collectFormData().resume) { const st = document.getElementById('flash-status'); st.textContent = "Remplis d'abord le résumé de l'événement (page 1)."; st.className = 'ai-status error'; return; }
+      flashCall('');
+    }
+    function flashChat() {
+      const inp = document.getElementById('flash-chat-text'); const t = inp.value.trim(); if (!t) return;
+      const log = document.getElementById('flash-chat-log'); const dv = document.createElement('div'); dv.className = 'ai-msg user'; dv.textContent = t; log.appendChild(dv); log.scrollTop = log.scrollHeight;
+      inp.value = ''; flashCall(t);
+    }
+    document.getElementById('flash-chat-text')?.addEventListener('keydown', e => { if (e.key === 'Enter') flashChat(); });
+
+    function loadJSZip() {
+      return new Promise((res, rej) => {
+        if (window.JSZip) return res(window.JSZip);
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        s.onload = () => res(window.JSZip); s.onerror = () => rej(new Error('JSZip introuvable (connexion ?)'));
+        document.head.appendChild(s);
+      });
+    }
+    function xmlEsc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function typeLabelFlash() {
+      const nat = document.getElementById('nature').value;
+      const typeSel = { humain: 'select-humain', environnement: 'select-environnement', industriel: 'select-industriel' }[nat];
+      const s = document.getElementById(typeSel); const v = s ? s.value : '';
+      return { 'accident-travail-avec-arret': 'Accident de Travail Avec Arrêt', 'accident-travail-sans-arret': 'Accident de Travail Sans Arrêt', 'accident-benin': 'Accident Bénin', 'presque-accident': "Presqu'accident", 'autre': 'Événement' }[v] || (nat === 'environnement' ? 'Événement Environnemental' : nat === 'industriel' ? 'Événement Industriel' : 'Événement');
+    }
+    function toJpegBytes(srcDataURL, w, h) {
+      return new Promise((res) => {
+        const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
+        if (!srcDataURL) { res(cv.toDataURL('image/jpeg', 0.9).split(',')[1]); return; }
+        const im = new Image();
+        im.onload = () => { const r = Math.min(w / im.width, h / im.height); const dw = im.width * r, dh = im.height * r; ctx.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh); res(cv.toDataURL('image/jpeg', 0.9).split(',')[1]); };
+        im.onerror = () => res(cv.toDataURL('image/jpeg', 0.9).split(',')[1]);
+        im.src = srcDataURL;
+      });
+    }
+    async function telechargerFlash() {
+      const st = document.getElementById('flash-dl-status');
+      st.textContent = 'Génération du PPTX…'; st.style.color = 'var(--muted)';
+      try {
+        const JSZip = await loadJSZip();
+        const buf = await fetch('flash_template.pptx').then(r => { if (!r.ok) throw new Error('gabarit introuvable (flash_template.pptx)'); return r.arrayBuffer(); });
+        const zip = await JSZip.loadAsync(buf);
+        const f = flashSnapshot();
+        const dateStr = (() => { const d = document.getElementById('accident-date').value; if (!d) return ''; const [y, m, j] = d.split('-'); return j + '/' + m + '/' + y; })();
+        const map = { '{{DATE}}': dateStr, '{{TYPE_LABEL}}': typeLabelFlash(), '{{CIRCONSTANCES}}': f.circonstances, '{{CONS1}}': f.cons1, '{{CONS2}}': f.cons2, '{{CONS3}}': f.cons3, '{{CONS3_NOTE}}': f.cons3_note, '{{CAUSE1A}}': f.cause1a, '{{CAUSE1B}}': f.cause1b, '{{CAUSE2}}': f.cause2, '{{ACTION}}': f.action, '{{RQS_TITRE}}': f.rqs_titre, '{{RQS_TXT}}': f.rqs_txt };
+        for (const part of ['ppt/slides/slide1.xml', 'ppt/slideLayouts/slideLayout12.xml']) {
+          let xml = await zip.file(part).async('string');
+          for (const k in map) xml = xml.split(k).join(xmlEsc(map[k]));
+          zip.file(part, xml);
+        }
+        let src = null;
+        const illu = document.getElementById('fl-illu').files[0];
+        if (illu) src = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(illu); });
+        else { const img = document.querySelector('#photo-container-3 img'); if (img) src = img.src; }
+        const jpg = await toJpegBytes(src, 900, 645);
+        zip.file('ppt/media/image11.jpg', jpg, { base64: true });
+        const out = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(out);
+        const nom = (document.getElementById('victime-nom')?.value || 'flash').replace(/[^\w-]/g, '_');
+        a.download = 'Flash_HSE_' + nom + '.pptx'; a.click(); URL.revokeObjectURL(a.href);
+        st.textContent = 'Flash téléchargé ✓'; st.style.color = '#2e7d32';
+      } catch (e) { st.textContent = 'Erreur : ' + e.message; st.style.color = '#c62828'; }
     }
 
     /* ===== Envoi du plan d'actions vers le PA global HSE ===== */
