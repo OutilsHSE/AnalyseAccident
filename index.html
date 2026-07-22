@@ -2694,7 +2694,7 @@
         const data = JSON.parse(await r.text());
         if (data.erreur) { st.textContent = 'Erreur : ' + data.erreur; st.className = 'ai-status error'; return; }
         if (data.objet) document.getElementById('courrier-objet').value = data.objet;
-        if (data.corps) document.getElementById('courrier-corps').value = data.corps;
+        if (data.corps) document.getElementById('courrier-corps').value = data.corps.replace(/^[ \t]+/gm, '');
         document.getElementById('courrier-wrap').classList.remove('hidden');
         autoGrow(document.getElementById('courrier-corps'));
         st.textContent = 'Projet rédigé ✓'; st.className = 'ai-status';
