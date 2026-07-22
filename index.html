@@ -1676,7 +1676,7 @@
           <textarea id="courrier-corps" style="min-height:340px;"></textarea>
           <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
             <button class="btn btn-ghost" type="button" onclick="copierCourrier()">📋 Copier</button>
-            <button class="btn btn-ghost" type="button" onclick="telechargerCourrier()">⬇ Télécharger (.doc)</button>
+            <button class="btn btn-ghost" type="button" onclick="telechargerCourrier()">⬇ Télécharger (.docx)</button>
           </div>
           <div class="ai-chat" id="courrier-chat">
             <div class="ai-chat-log" id="courrier-chat-log"></div>
@@ -2752,48 +2752,32 @@
       const txt = document.getElementById('courrier-objet').value + '\n\n' + document.getElementById('courrier-corps').value;
       navigator.clipboard.writeText(txt).then(() => toast('Courrier copié', true)).catch(() => toast('Copie impossible'));
     }
-    function telechargerCourrier() {
-      const esc = s => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
-      const objet = esc(document.getElementById('courrier-objet').value.replace(/^Objet\s*:?\s*/i, ''));
-      const corps = '<p>' + esc(document.getElementById('courrier-corps').value).replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
-      const logo = document.querySelector('.app-header .logo')?.src || '';
-      const prenom = (document.getElementById('victime-prenom')?.value || '').trim();
-      const nom = (document.getElementById('victime-nom')?.value || '').trim();
-      const fonction = (document.getElementById('victime-fonction')?.value || '').trim();
-      const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-      const buildHtml = (logoRef) =>
-        '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head>' +
-        '<body style="font-family:Aptos, Calibri, Arial, sans-serif;font-size:11pt;line-height:1.5;color:#111;">' +
-        '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr>' +
-        '<td valign="top">' + (logoRef ? '<img src="' + logoRef + '" height="64">' : '<b>CDES</b>') + '</td>' +
-        '<td valign="top" align="right" style="font-size:10pt;color:#555;">CDES<br>[Adresse expéditeur]<br>[Code postal Ville]</td>' +
-        '</tr></table><br><br>' +
-        '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td width="52%"></td>' +
-        '<td valign="top"><b>' + esc((prenom + ' ' + nom).trim()) + '</b><br>' + esc(fonction) + '<br>[Adresse du destinataire]<br>[Code postal Ville]</td>' +
-        '</tr></table>' +
-        '<p align="right">Bouligny, le ' + date + '</p><br>' +
-        '<p><b><u>Objet</u> : ' + objet + '</b></p>' + corps + '<br><br>' +
-        '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td width="52%"></td>' +
-        '<td>Mathieu AUDEBERT<br>Aurélien MOMEUX<br><b>Directeurs Généraux</b></td></tr></table>' +
-        '</body></html>';
-      let content;
-      if (logo && logo.startsWith('data:')) {
-        const mime = logo.substring(5, logo.indexOf(';'));
-        const b64 = logo.substring(logo.indexOf(',') + 1).replace(/\s+/g, '').replace(/(.{76})/g, '$1\r\n');
-        const B = '----=_CDES_Courrier';
-        content =
-          'MIME-Version: 1.0\r\nContent-Type: multipart/related; boundary="' + B + '"\r\n\r\n' +
-          '--' + B + '\r\nContent-Type: text/html; charset="utf-8"\r\nContent-Location: file:///C:/courrier.htm\r\n\r\n' +
-          buildHtml('cdes-logo.png') + '\r\n\r\n' +
-          '--' + B + '\r\nContent-Type: ' + mime + '\r\nContent-Transfer-Encoding: base64\r\nContent-Location: cdes-logo.png\r\n\r\n' +
-          b64 + '\r\n--' + B + '--\r\n';
-      } else {
-        content = buildHtml(null);
-      }
-      const blob = new Blob([content], { type: 'application/msword' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-      const fn = (nom || 'courrier').replace(/[^\w-]/g, '_');
-      a.download = 'Courrier_rappel_ordre_' + fn + '.doc'; a.click(); URL.revokeObjectURL(a.href);
+    async function telechargerCourrier() {
+      try {
+        const JSZip = await loadJSZip();
+        const buf = await fetch('courrier_template.docx').then(r => { if (!r.ok) throw new Error('gabarit introuvable (courrier_template.docx)'); return r.arrayBuffer(); });
+        const zip = await JSZip.loadAsync(buf);
+        const esc = s => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const prenom = (document.getElementById('victime-prenom')?.value || '').trim();
+        const nom = (document.getElementById('victime-nom')?.value || '').trim();
+        const fonction = (document.getElementById('victime-fonction')?.value || '').trim();
+        const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        const objet = document.getElementById('courrier-objet').value.replace(/^Objet\s*:?\s*/i, '');
+        const corps = document.getElementById('courrier-corps').value.split('\n').map(esc).join('</w:t><w:br/><w:t xml:space="preserve">');
+        let xml = await zip.file('word/document.xml').async('string');
+        xml = xml.split('{{PRENOM}}').join(esc(prenom))
+          .split('{{NOM}}').join(esc(nom))
+          .split('{{FONCTION}}').join(esc(fonction))
+          .split('{{DATE}}').join(esc(date))
+          .split('{{OBJET}}').join(esc(objet))
+          .split('{{CORPS}}').join(corps);
+        zip.file('word/document.xml', xml);
+        const out = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(out);
+        const fn = (nom || 'courrier').replace(/[^\w-]/g, '_');
+        a.download = 'Courrier_rappel_ordre_' + fn + '.docx'; a.click(); URL.revokeObjectURL(a.href);
+        toast('Courrier téléchargé', true);
+      } catch (e) { toast('Erreur : ' + e.message); }
     }
 
     /* ===== Flash HSE (PPTX) ===== */
