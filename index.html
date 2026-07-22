@@ -2716,14 +2716,37 @@
       navigator.clipboard.writeText(txt).then(() => toast('Courrier copié', true)).catch(() => toast('Copie impossible'));
     }
     function telechargerCourrier() {
-      const objet = document.getElementById('courrier-objet').value.replace(/^Objet\s*:?\s*/i, '');
-      const corps = document.getElementById('courrier-corps').value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>');
-      const html = '<html><head><meta charset="utf-8"></head><body style="font-family:Arial;font-size:11pt;line-height:1.5;">' +
-        '<p><b><u>Objet</u> : ' + objet.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</b></p><p>' + corps + '</p></body></html>';
+      const esc = s => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      const objet = esc(document.getElementById('courrier-objet').value.replace(/^Objet\s*:?\s*/i, ''));
+      const corps = '<p>' + esc(document.getElementById('courrier-corps').value).replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+      const logo = document.querySelector('.app-header .logo')?.src || '';
+      const prenom = (document.getElementById('victime-prenom')?.value || '').trim();
+      const nom = (document.getElementById('victime-nom')?.value || '').trim();
+      const fonction = (document.getElementById('victime-fonction')?.value || '').trim();
+      const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      const html =
+        '<html><head><meta charset="utf-8"></head>' +
+        '<body style="font-family:Arial;font-size:11pt;line-height:1.5;color:#111;">' +
+        '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr>' +
+        '<td valign="top">' + (logo ? '<img src="' + logo + '" height="64">' : '<b>CDES</b>') + '</td>' +
+        '<td valign="top" align="right" style="font-size:10pt;color:#555;">CDES<br>[Adresse expéditeur]<br>[Code postal Ville]</td>' +
+        '</tr></table>' +
+        '<br><br>' +
+        '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td width="52%"></td>' +
+        '<td valign="top"><b>' + esc((prenom + ' ' + nom).trim()) + '</b><br>' + esc(fonction) + '<br>[Adresse du destinataire]<br>[Code postal Ville]</td>' +
+        '</tr></table>' +
+        '<p align="right">Bouligny, le ' + date + '</p><br>' +
+        '<p><b><u>Objet</u> : ' + objet + '</b></p>' +
+        corps +
+        '<br><br>' +
+        '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td width="52%"></td>' +
+        '<td>Mathieu AUDEBERT<br>Aurélien MOMEUX<br><b>Directeurs Généraux</b></td>' +
+        '</tr></table>' +
+        '</body></html>';
       const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-      const nom = (document.getElementById('victime-nom')?.value || 'courrier').replace(/[^\w-]/g, '_');
-      a.download = 'Courrier_rappel_ordre_' + nom + '.doc'; a.click(); URL.revokeObjectURL(a.href);
+      const fn = (nom || 'courrier').replace(/[^\w-]/g, '_');
+      a.download = 'Courrier_rappel_ordre_' + fn + '.doc'; a.click(); URL.revokeObjectURL(a.href);
     }
 
     /* ===== Envoi du plan d'actions vers le PA global HSE ===== */
