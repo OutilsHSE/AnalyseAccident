@@ -983,7 +983,9 @@
 
       /* tout le rapport visible d'un coup */
       .step-panel { display: block !important; animation: none !important; }
-      /* flux continu : pas de saut de page forcé par section (évite les grands blancs) */
+      /* une section par page (démarrage propre), mais les cartes peuvent déborder */
+      .step-panel[data-step="2"], .step-panel[data-step="3"],
+      .step-panel[data-step="4"], .step-panel[data-step="5"] { break-before: page; }
 
       /* titre de section (le stepper est masqué) */
       .step-panel::before {
@@ -997,7 +999,7 @@
       .step-panel[data-step="5"]::before { content: "5 — Plan d'actions & retours d'expérience"; }
 
       /* en-tête */
-      .app-header { box-shadow: none !important; border-bottom: 2px solid var(--cdes-blue); padding: 0 0 8px !important; margin-bottom: 14px !important; }
+      .app-header { position: static !important; box-shadow: none !important; border-bottom: 2px solid var(--cdes-blue); padding: 0 0 8px !important; margin-bottom: 14px !important; }
       .app-header .inner { padding: 0 !important; }
       main#report-root { max-width: none !important; padding: 0 !important; margin: 0 !important; }
 
