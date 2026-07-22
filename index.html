@@ -1003,6 +1003,11 @@
       .app-header .inner { padding: 0 !important; }
       main#report-root { max-width: none !important; padding: 0 !important; margin: 0 !important; }
 
+      /* garder les grilles côte à côte à l'impression (comme le formulaire) */
+      .grid.cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+      .grid.cols-3 { grid-template-columns: repeat(3, 1fr) !important; }
+      .grid.cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
+
       /* cartes : pas d'ombre, coupures autorisées mais blocs atomiques protégés */
       .card { box-shadow: none !important; border: 1px solid #c9d4dc !important; break-inside: auto; margin-bottom: 14px !important; }
       .card > h2 { break-after: avoid; }
@@ -1602,12 +1607,10 @@
           <thead>
             <tr>
               <th style="width:44px;">N°</th>
-              <th style="width:135px;">Type</th>
+              <th style="width:165px;">Type</th>
               <th>Action</th>
-              <th style="width:110px;">Pilote</th>
-              <th style="width:110px;">Délai</th>
-              <th style="width:120px;">Statut</th>
-              <th style="width:120px;">Contrôle efficacité</th>
+              <th style="width:120px;">Pilote</th>
+              <th style="width:120px;">Délai</th>
               <th style="width:44px;" class="no-print">Suppr.</th>
             </tr>
           </thead>
@@ -1640,7 +1643,7 @@
         </div>
 
         <div class="block-title">Diffusion</div>
-        <label class="check"><input type="checkbox"> Diffusion d'un flash HSE à animer en Quart d'Heure Prévention (QHP)</label>
+        <label class="check"><input type="checkbox" id="diffusion-chk"> Diffusion d'un flash HSE à animer en Quart d'Heure Prévention (QHP)</label>
 
         <div class="block-title">Analyse de l'événement</div>
         <label class="check" style="margin-bottom:14px;"><input type="checkbox" id="convocation-chk"> Convocation du salarié pour l'analyse de l'événement accidentel</label>
@@ -1649,10 +1652,10 @@
           <table id="emargement-table">
             <thead>
               <tr>
-                <th>Nom / Prénom</th>
-                <th style="width:150px;">Fonction</th>
-                <th style="width:120px;">Date</th>
-                <th style="width:230px;">Signature</th>
+                <th style="width:180px;">Nom / Prénom</th>
+                <th>Fonction</th>
+                <th style="width:100px;">Date</th>
+                <th style="width:210px;">Signature</th>
                 <th style="width:50px;" class="no-print">Suppr.</th>
               </tr>
             </thead>
@@ -1979,14 +1982,6 @@
         <td><textarea placeholder="Action à mener"></textarea></td>
         <td><input type="text"></td>
         <td><input type="date"></td>
-        <td>
-          <select>
-            <option value="a-faire">À faire</option>
-            <option value="en-cours">En cours</option>
-            <option value="soldee">Soldée</option>
-          </select>
-        </td>
-        <td><input type="date" title="Date de contrôle d'efficacité"></td>
         <td class="no-print"><button class="remove-row" type="button" onclick="this.closest('tr').remove();renumber();">✕</button></td>`;
       tb.appendChild(tr);
       renumber();
@@ -2657,6 +2652,22 @@
       if (d.precisions) Object.keys(d.precisions).forEach(block => { const ps = document.querySelectorAll('#' + block + ' .qa-prec'); (d.precisions[block] || []).forEach((v, i) => { if (ps[i]) ps[i].value = v; }); });
       if (d.lesions && window.setLesionState) window.setLesionState(d.lesions);
       if (d.arbre && window.ct) ct.load(d.arbre);
+      if (d.actions) {
+        const b = document.getElementById('actions-body'); b.innerHTML = '';
+        d.actions.forEach(a => { addActionRow(); const tr = b.lastElementChild; const sel = tr.querySelector('select'); if (sel && a.type) sel.value = a.type; const ta = tr.querySelector('textarea'); if (ta) ta.value = a.action || ''; const ins = tr.querySelectorAll('input'); if (ins[0]) ins[0].value = a.pilote || ''; if (ins[1]) ins[1].value = a.delai || ''; });
+        renumber();
+      }
+      if (d.barrieres) {
+        const b = document.getElementById('barrieres-body'); b.innerHTML = '';
+        d.barrieres.forEach(x => { addBarriereRow(); const tr = b.lastElementChild; const tas = tr.querySelectorAll('textarea'); const sel = tr.querySelector('select'); if (tas[0]) tas[0].value = x.barriere || ''; if (sel && x.etat) sel.value = x.etat; if (tas[1]) tas[1].value = x.pourquoi || ''; });
+      }
+      if (d.evals) ['eval1', 'eval2', 'eval3'].forEach(n => { if (d.evals[n]) { const r = document.querySelector('input[name="' + n + '"][value="' + d.evals[n] + '"]'); if (r) r.checked = true; } });
+      if (d.diffusion) { const c = document.getElementById('diffusion-chk'); if (c) c.checked = true; }
+      if (d.emargement && d.emargement.length) {
+        const cv = document.getElementById('convocation-chk'); if (cv) { cv.checked = true; cv.dispatchEvent(new Event('change')); }
+        const b = document.getElementById('emargement-body'); b.innerHTML = '';
+        d.emargement.forEach(p => { addEmargementRow(); const tr = b.lastElementChild; const ins = tr.querySelectorAll('input'); if (ins[0]) ins[0].value = p.nom || ''; if (ins[1]) ins[1].value = p.fonction || ''; if (ins[2] && p.date) ins[2].value = p.date; });
+      }
       checkHIPO(); growAll(); clearInvalid(document); doSave(); goStep(1);
     }
     window.applyFriendly = applyFriendly;
