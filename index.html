@@ -998,6 +998,7 @@
       <label class="btn btn-ghost btn-sm" for="import-file" style="margin:0;cursor:pointer;">📂 Importer</label>
       <input type="file" id="import-file" accept="application/json,.json" style="display:none;">
       <button class="btn btn-ghost btn-sm" type="button" id="btn-demo">🧪 Exemple</button>
+      <button class="btn btn-ghost btn-sm" type="button" id="btn-resume" style="display:none;" onclick="reprendre()">↩ Reprendre la saisie précédente</button>
       <button class="btn btn-ghost btn-sm" type="button" id="btn-reset-all">🗑 Nouveau</button>
     </div>
 
@@ -2447,10 +2448,12 @@
       catch (e) { setSaveStatus('Sauvegarde auto indisponible', 'off'); }
     }
     function scheduleSave() { setSaveStatus('Enregistrement…', 'saving'); clearTimeout(saveTimer); saveTimer = setTimeout(doSave, 700); }
-    document.addEventListener('input', scheduleSave, true);
-    document.addEventListener('change', scheduleSave, true);
-    document.getElementById('report-root').addEventListener('click', e => { if (e.target.closest('#cause-tree, .lm-lesion, .lm-hotspot, .lm-marker, .picto-dd-opt, .regle-opt, .seg')) scheduleSave(); });
-    window.addEventListener('beforeunload', doSave);
+    let autosaveReady = false, autosaveDirty = false;
+    function onUserEdit() { if (!autosaveReady) return; autosaveDirty = true; scheduleSave(); }
+    document.addEventListener('input', onUserEdit, true);
+    document.addEventListener('change', onUserEdit, true);
+    document.getElementById('report-root').addEventListener('click', e => { if (e.target.closest('#cause-tree, .lm-lesion, .lm-hotspot, .lm-marker, .picto-dd-opt, .regle-opt, .seg')) onUserEdit(); });
+    window.addEventListener('beforeunload', () => { if (autosaveDirty) doSave(); });
 
     // Export / Import / Nouveau
     document.getElementById('btn-export-json').addEventListener('click', () => {
@@ -2607,8 +2610,11 @@
       return { origine: "RETEX – Evènement Accidentel", chantier: val('chantier'), dateAjout: iso(today), moisAnnee, domaine, sujet, observations: resume, impact, priorite: prio };
     }
     function suiviFromStatut(v) { return v === 'fait' || v === 'cloture' || v === 'clôturé' ? 1 : v === 'en-cours' ? 0.5 : 0; }
+    function hashStr(s) { let h = 5381; for (let i = 0; i < s.length; i++) { h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; } return h.toString(36); }
     function collectPlanRows() {
-      const c = planContext(); const rows = [];
+      const c = planContext(); const rows = [], refs = [];
+      const rid = document.getElementById('report-id')?.value || '';
+      const accDate = document.getElementById('accident-date')?.value || '';
       document.querySelectorAll('#actions-body tr').forEach(tr => {
         const sels = tr.querySelectorAll('select'); const ta = tr.querySelector('textarea'); const inputs = tr.querySelectorAll('input');
         const action = (ta?.value || '').trim(); if (!action) return;
@@ -2617,29 +2623,50 @@
         const suivi = suiviFromStatut(sels[1] ? sels[1].value : '');
         rows.push([c.origine, c.chantier, c.dateAjout, '', c.domaine, c.sujet, c.observations, action,
           c.impact, 0, 0, c.priorite, pilote || 'HSE', delai, 'NON', '', suivi, '', '', '']);
+        refs.push(hashStr(rid + '|' + c.chantier + '|' + accDate + '|' + action));
       });
-      return rows;
+      return { rows, refs };
     }
     async function envoyerPA() {
       const res = document.getElementById('pa-result');
-      const rows = collectPlanRows();
+      const { rows, refs } = collectPlanRows();
       if (!rows.length) { res.textContent = "Aucune action à envoyer — remplis d'abord le plan d'actions."; res.style.color = '#c62828'; return; }
       if (!AI_ENDPOINT) { res.textContent = "Endpoint non configuré."; res.style.color = '#c62828'; return; }
       res.textContent = "Envoi en cours…"; res.style.color = 'var(--muted)';
       try {
-        const r = await fetch(AI_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: 'plan', header: PA_HEADER, rows }) });
+        const r = await fetch(AI_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: 'plan', header: PA_HEADER, rows, refs }) });
         const data = JSON.parse(await r.text());
-        if (data.ok) { res.innerHTML = data.n + " action(s) envoyée(s) ✓ — <a href=\"" + data.url + "\" target=\"_blank\">ouvrir le Sheet du PA</a>"; res.style.color = '#2e7d32'; }
-        else { res.textContent = "Erreur : " + (data.erreur || 'inconnue'); res.style.color = '#c62828'; }
+        if (data.ok) {
+          let msg = data.added + " action(s) ajoutée(s)";
+          if (data.skipped) msg += ", " + data.skipped + " doublon(s) ignoré(s)";
+          res.innerHTML = msg + " ✓ — <a href=\"" + data.url + "\" target=\"_blank\">ouvrir le Sheet du PA</a>";
+          res.style.color = '#2e7d32';
+        } else { res.textContent = "Erreur : " + (data.erreur || 'inconnue'); res.style.color = '#c62828'; }
       } catch (e) { res.textContent = "Erreur d'envoi : " + e.message; res.style.color = '#c62828'; }
     }
 
     goStep(1);
 
-    // Restauration au chargement
-    try { const saved = localStorage.getItem(SAVE_KEY); if (saved) restoreAll(JSON.parse(saved)); }
-    catch (e) { console.warn(e); }
+    // Ouverture VIERGE. S'il existe une saisie précédente, on propose de la reprendre
+    // (au lieu de la recharger automatiquement) pour ne rien perdre sans imposer l'exemple.
+    function reprendre() {
+      if (!window._savedSession) return;
+      restoreAll(window._savedSession);
+      autosaveDirty = true;
+      const b = document.getElementById('btn-resume'); if (b) b.style.display = 'none';
+    }
+    try {
+      const saved = localStorage.getItem(SAVE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && (parsed.statics || parsed.arbre || parsed.actions)) {
+          window._savedSession = parsed;
+          const b = document.getElementById('btn-resume'); if (b) b.style.display = '';
+        }
+      }
+    } catch (e) { console.warn(e); }
     growAll();
+    setTimeout(() => { autosaveReady = true; }, 0);
   </script>
 </body>
 
