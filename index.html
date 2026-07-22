@@ -983,8 +983,7 @@
 
       /* tout le rapport visible d'un coup */
       .step-panel { display: block !important; animation: none !important; }
-      .step-panel[data-step="2"], .step-panel[data-step="3"],
-      .step-panel[data-step="4"], .step-panel[data-step="5"] { break-before: page; }
+      /* flux continu : pas de saut de page forcé par section (évite les grands blancs) */
 
       /* titre de section (le stepper est masqué) */
       .step-panel::before {
@@ -1002,8 +1001,14 @@
       .app-header .inner { padding: 0 !important; }
       main#report-root { max-width: none !important; padding: 0 !important; margin: 0 !important; }
 
-      /* cartes : pas d'ombre, éviter les coupures */
-      .card { box-shadow: none !important; border: 1px solid #c9d4dc !important; break-inside: avoid; page-break-inside: avoid; margin-bottom: 14px !important; }
+      /* cartes : pas d'ombre, coupures autorisées mais blocs atomiques protégés */
+      .card { box-shadow: none !important; border: 1px solid #c9d4dc !important; break-inside: auto; margin-bottom: 14px !important; }
+      .card > h2 { break-after: avoid; }
+      .step-panel::before { break-after: avoid; }
+      .block-title { break-after: avoid; break-inside: avoid; }
+      .grid > div, .qa-item, tr, .foh-section .grid > div, .foh-head { break-inside: avoid; }
+      .foh-head { break-after: avoid; }
+      .tree-scroll, .cause-tree, .lesion-map, .ac-legend { break-inside: avoid; }
 
       /* champs lisibles + déplier les zones de texte (même celles restées masquées) */
       input, select, textarea { border: 1px solid #c9d4dc !important; background: #fff !important; color: #000 !important; }
