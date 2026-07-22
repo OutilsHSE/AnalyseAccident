@@ -1661,6 +1661,32 @@
           <button class="btn btn-add no-print" type="button" onclick="addEmargementRow()">＋ Ajouter un participant</button>
         </div>
       </div>
+
+      <div class="card no-print" id="card-courrier">
+        <h2>Courrier de rappel à l'ordre (Culture Juste)</h2>
+        <p class="sub">Optionnel — génère un projet de courrier à partir de l'analyse, dans l'esprit « culture juste ». À relire, ajuster, puis coller dans ta trame CDES (en-tête + signatures).</p>
+        <div class="ai-bar">
+          <button class="btn btn-primary" type="button" id="btn-courrier" onclick="genererCourrier()">✉️ Rédiger le courrier (IA)</button>
+          <span class="ai-status" id="courrier-status"></span>
+        </div>
+        <div id="courrier-wrap" class="hidden">
+          <label class="field">Objet</label>
+          <input type="text" id="courrier-objet">
+          <label class="field" style="margin-top:12px;">Corps du courrier</label>
+          <textarea id="courrier-corps" style="min-height:340px;"></textarea>
+          <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+            <button class="btn btn-ghost" type="button" onclick="copierCourrier()">📋 Copier</button>
+            <button class="btn btn-ghost" type="button" onclick="telechargerCourrier()">⬇ Télécharger (.doc)</button>
+          </div>
+          <div class="ai-chat" id="courrier-chat">
+            <div class="ai-chat-log" id="courrier-chat-log"></div>
+            <div class="ai-chat-input">
+              <input type="text" id="courrier-chat-text" placeholder="Affiner : « plus ferme », « mentionne l'entretien », « ton plus mesuré »…">
+              <button class="btn btn-primary" type="button" style="padding:8px 14px;" onclick="courrierChat()">Envoyer</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -2644,6 +2670,61 @@
       applyFriendly(DEMO); toast('Exemple chargé', true);
     }
     document.getElementById('btn-demo').addEventListener('click', loadDemo);
+
+    /* ===== Courrier de rappel à l'ordre (Culture Juste) ===== */
+    function collectCourrierData() {
+      const val = id => (document.getElementById(id)?.value || '').trim();
+      const regleVal = document.getElementById('regle-selected')?.dataset.value || 'non';
+      return {
+        faits: collectFormData(),
+        personne: { prenom: val('victime-prenom'), nom: val('victime-nom'), fonction: val('victime-fonction'), anciennete: val('victime-anciennete') },
+        regleQuiSauve: (regleVal === 'non' || !regleVal) ? '' : ('RQS n°' + regleVal),
+        causes: { technique: val('cause-technique'), organisationnel: val('cause-orga'), humain: val('cause-humain') },
+        foh: { mode: val('foh-mode'), anciennete: val('foh-anciennete'), epi: val('foh-epi'), accueil: val('foh-accueil'), vigi: val('foh-vigi'), amont: val('foh-amont') },
+        actionsPrises: [...document.querySelectorAll('#soins .qa-prec')].map(p => p.value.trim()).filter(Boolean)
+      };
+    }
+    async function courrierCall(instruction) {
+      const st = document.getElementById('courrier-status');
+      if (!AI_ENDPOINT) { st.textContent = '⚠ Endpoint IA non configuré.'; st.className = 'ai-status error'; return; }
+      st.textContent = 'Rédaction en cours…'; st.className = 'ai-status working';
+      const payload = { action: 'courrier', donnees: collectCourrierData(), courrier: document.getElementById('courrier-corps').value || '', instruction: instruction || '' };
+      try {
+        const r = await fetch(AI_ENDPOINT, { method: 'POST', body: JSON.stringify(payload) });
+        const data = JSON.parse(await r.text());
+        if (data.erreur) { st.textContent = 'Erreur : ' + data.erreur; st.className = 'ai-status error'; return; }
+        if (data.objet) document.getElementById('courrier-objet').value = data.objet;
+        if (data.corps) document.getElementById('courrier-corps').value = data.corps;
+        document.getElementById('courrier-wrap').classList.remove('hidden');
+        autoGrow(document.getElementById('courrier-corps'));
+        st.textContent = 'Projet rédigé ✓'; st.className = 'ai-status';
+        if (data.commentaire) { const log = document.getElementById('courrier-chat-log'); const dv = document.createElement('div'); dv.className = 'ai-msg bot'; dv.textContent = data.commentaire; log.appendChild(dv); log.scrollTop = log.scrollHeight; }
+      } catch (e) { st.textContent = 'Erreur : ' + e.message; st.className = 'ai-status error'; }
+    }
+    function genererCourrier() {
+      if (!collectFormData().resume) { const st = document.getElementById('courrier-status'); st.textContent = "Remplis d'abord le résumé de l'événement (page 1)."; st.className = 'ai-status error'; return; }
+      courrierCall('');
+    }
+    function courrierChat() {
+      const inp = document.getElementById('courrier-chat-text'); const t = inp.value.trim(); if (!t) return;
+      const log = document.getElementById('courrier-chat-log'); const dv = document.createElement('div'); dv.className = 'ai-msg user'; dv.textContent = t; log.appendChild(dv); log.scrollTop = log.scrollHeight;
+      inp.value = ''; courrierCall(t);
+    }
+    document.getElementById('courrier-chat-text')?.addEventListener('keydown', e => { if (e.key === 'Enter') courrierChat(); });
+    function copierCourrier() {
+      const txt = document.getElementById('courrier-objet').value + '\n\n' + document.getElementById('courrier-corps').value;
+      navigator.clipboard.writeText(txt).then(() => toast('Courrier copié', true)).catch(() => toast('Copie impossible'));
+    }
+    function telechargerCourrier() {
+      const objet = document.getElementById('courrier-objet').value.replace(/^Objet\s*:?\s*/i, '');
+      const corps = document.getElementById('courrier-corps').value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>');
+      const html = '<html><head><meta charset="utf-8"></head><body style="font-family:Arial;font-size:11pt;line-height:1.5;">' +
+        '<p><b><u>Objet</u> : ' + objet.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</b></p><p>' + corps + '</p></body></html>';
+      const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      const nom = (document.getElementById('victime-nom')?.value || 'courrier').replace(/[^\w-]/g, '_');
+      a.download = 'Courrier_rappel_ordre_' + nom + '.doc'; a.click(); URL.revokeObjectURL(a.href);
+    }
 
     /* ===== Envoi du plan d'actions vers le PA global HSE ===== */
     const PA_HEADER = ["Origine", "Chantier", "Date d'ajout", "Mois / Année", "Domaine", "Sujet",
