@@ -968,6 +968,58 @@
     .hidden {
       display: none !important;
     }
+    /* =========================================================
+       IMPRESSION / EXPORT PDF  (window.print -> Enregistrer en PDF)
+       ========================================================= */
+    @media print {
+      @page { margin: 12mm 12mm 15mm; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      html, body { background: #fff !important; margin: 0 !important; }
+
+      /* masquer toute l'interface non-document */
+      .no-print, .stepper, .footer-nav, .data-toolbar, .toast, .modal,
+      .ai-bar, .ai-chat, .tree-toolbar, .upload, .btn, .btn-add, .remove-row,
+      .del, .info-btn, .regle-options, .ac-node .acts, #lm-palette, .lm-hint { display: none !important; }
+
+      /* tout le rapport visible d'un coup */
+      .step-panel { display: block !important; animation: none !important; }
+      .step-panel[data-step="2"], .step-panel[data-step="3"],
+      .step-panel[data-step="4"], .step-panel[data-step="5"] { break-before: page; }
+
+      /* titre de section (le stepper est masqué) */
+      .step-panel::before {
+        display: block; font-size: 15px; font-weight: bold; color: var(--cdes-blue-dark);
+        border-left: 5px solid var(--cdes-sky); padding-left: 10px; margin: 0 0 14px;
+      }
+      .step-panel[data-step="1"]::before { content: "1 — Recueil des faits"; }
+      .step-panel[data-step="2"]::before { content: "2 — Contexte & acteurs"; }
+      .step-panel[data-step="3"]::before { content: "3 — Actions engagées"; }
+      .step-panel[data-step="4"]::before { content: "4 — Analyse des causes"; }
+      .step-panel[data-step="5"]::before { content: "5 — Plan d'actions & retours d'expérience"; }
+
+      /* en-tête */
+      .app-header { box-shadow: none !important; border-bottom: 2px solid var(--cdes-blue); padding: 0 0 8px !important; margin-bottom: 14px !important; }
+      .app-header .inner { padding: 0 !important; }
+      main#report-root { max-width: none !important; padding: 0 !important; margin: 0 !important; }
+
+      /* cartes : pas d'ombre, éviter les coupures */
+      .card { box-shadow: none !important; border: 1px solid #c9d4dc !important; break-inside: avoid; page-break-inside: avoid; margin-bottom: 14px !important; }
+
+      /* champs lisibles + déplier les zones de texte (même celles restées masquées) */
+      input, select, textarea { border: 1px solid #c9d4dc !important; background: #fff !important; color: #000 !important; }
+      textarea { min-height: 0 !important; overflow: visible !important; white-space: pre-wrap !important; }
+      [contenteditable] { outline: none !important; }
+
+      /* images, SVG, tableaux dans la largeur */
+      img, svg { max-width: 100% !important; }
+      table { break-inside: auto; }
+      tr, td, th { break-inside: avoid; }
+      .tree-scroll { overflow: visible !important; border: none !important; background: #fff !important; }
+      .cause-tree { transform: scale(0.82); transform-origin: top left; }
+      .ac-legend { display: flex !important; }   /* garder la légende de l'arbre */
+      a { color: #000 !important; text-decoration: none; }
+    }
+
   </style>
 </head>
 
@@ -1951,15 +2003,23 @@
       m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
 
-    /* ---------------- PDF export (phase 3 : à affiner) ---------------- */
+    /* ---------------- Export PDF (impression fidèle) ---------------- */
     function exportPDF() {
       const panel = document.querySelector('.step-panel.active');
       if (panel && typeof validateStep === 'function') {
         const miss = validateStep(panel);
         if (miss.length) { toast('Complète les champs obligatoires en rouge avant d\'exporter.'); miss[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
       }
-      // Placeholder basique — la fidélité du rendu sera travaillée en phase 3.
-      window.print();
+      // Rendre toutes les étapes visibles + déplier les zones de texte pour l'impression
+      const panels = document.querySelectorAll('.step-panel');
+      panels.forEach(p => { p.dataset.prevDisplay = p.style.display; p.style.display = 'block'; });
+      if (typeof growAll === 'function') growAll();
+      function revert() {
+        panels.forEach(p => { p.style.display = p.dataset.prevDisplay || ''; delete p.dataset.prevDisplay; });
+        window.removeEventListener('afterprint', revert);
+      }
+      window.addEventListener('afterprint', revert);
+      setTimeout(() => window.print(), 60);
     }
 
     /* ===== Cartographie des lésions (module isolé) ===== */
