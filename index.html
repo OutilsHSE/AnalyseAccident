@@ -2591,13 +2591,20 @@
       const accDate = val('accident-date');
       const moisAnnee = accDate ? accDate.slice(0, 7) + '-01' : iso(new Date(today.getFullYear(), today.getMonth(), 1));
       const domaine = { humain: 'Sécurité', environnement: 'Environnement', industriel: 'Sécurité' }[nat] || 'Sécurité';
-      const typeShort = { 'accident-travail-avec-arret': 'ATAA', 'accident-travail-sans-arret': 'ATSA', 'accident-benin': 'AT Bénin', 'presque-accident': "Presqu'AT", 'autre': 'AT' }[typeVal] || (nat === 'environnement' ? 'Environnement' : nat === 'industriel' ? 'Industriel' : 'AT');
+      const humainCodes = { 'accident-travail-avec-arret': 'ATAA', 'accident-travail-sans-arret': 'ATSA', 'accident-benin': 'AT Bénin', 'presque-accident': 'PAT', 'autre': 'AT' };
+      let sujet;
+      if (nat === 'humain') {
+        const code = humainCodes[typeVal] || 'AT';
+        const personne = (val('victime-prenom') + ' ' + val('victime-nom')).replace(/\s+/g, ' ').trim();
+        sujet = (code + ' ' + personne).trim();
+      } else {
+        sujet = ((nat === 'environnement' ? 'ENV' : 'IND') + ' ' + val('chantier')).trim();
+      }
       let prio = '2 - Modérée';
       if (gp >= 5) prio = '4 - Urgente'; else if (gp >= 3) prio = '3 - Haute'; else if (gp >= 2) prio = '2 - Modérée'; else if (gp >= 1) prio = '1 - Locale';
       const impact = gp ? Math.min(3, Math.max(1, gp)) : 2;
       const resume = val('resume');
-      const court = resume.replace(/\s+/g, ' ').slice(0, 70);
-      return { origine: "RETEX – Evènement Accidentel", chantier: val('chantier'), dateAjout: iso(today), moisAnnee, domaine, sujet: `RETEX ${typeShort} - ${court}`, observations: resume, impact, priorite: prio };
+      return { origine: "RETEX – Evènement Accidentel", chantier: val('chantier'), dateAjout: iso(today), moisAnnee, domaine, sujet, observations: resume, impact, priorite: prio };
     }
     function suiviFromStatut(v) { return v === 'fait' || v === 'cloture' || v === 'clôturé' ? 1 : v === 'en-cours' ? 0.5 : 0; }
     function collectPlanRows() {
@@ -2608,7 +2615,7 @@
         const pilote = (inputs[0]?.value || '').trim();
         const delai = (inputs[1]?.value || '').trim();
         const suivi = suiviFromStatut(sels[1] ? sels[1].value : '');
-        rows.push([c.origine, c.chantier, c.dateAjout, c.moisAnnee, c.domaine, c.sujet, c.observations, action,
+        rows.push([c.origine, c.chantier, c.dateAjout, '', c.domaine, c.sujet, c.observations, action,
           c.impact, 0, 0, c.priorite, pilote || 'HSE', delai, 'NON', '', suivi, '', '', '']);
       });
       return rows;
