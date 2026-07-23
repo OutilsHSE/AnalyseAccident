@@ -920,23 +920,39 @@
     .tree-scroll { overflow-x: auto; padding: 10px 0 4px; border: 1px dashed var(--line); border-radius: 10px; background: #fbfdff; }
 
     .cause-tree { position: relative; }
-    .ac-num { position: absolute; top: -9px; left: -9px; width: 22px; height: 22px; border-radius: 50%; background: var(--cdes-blue); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 4; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
-    .ac-shield { position: absolute; transform: translate(-50%, -50%); z-index: 5; cursor: pointer; font-size: 20px; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
-    .ac-shield b { position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; color: #fff; }
-    .ac-shield.etat-absente { color: #e53935; }
-    .ac-shield.etat-defaillante { color: #fb8c00; }
-    .ac-shield.etat-contournee { color: #f9a825; }
-    .ac-shield.etat-presente { color: #43a047; }
-    .ac-linkdot { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 2px dashed var(--cdes-blue); cursor: pointer; z-index: 6; animation: dotpulse 1.1s infinite; }
+    .ac-num { position: absolute; top: -12px; left: -12px; width: 28px; height: 28px; border-radius: 50%; background: #1565c0; color: #fff; font-size: 15px; font-weight: 800; font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 7; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,.4); }
+    .ac-num:hover { background: #0d47a1; }
+    .ac-node .acts button.act-num { background: #1565c0; color: #fff; border-color: #1565c0; font-weight: 700; }
+    .ac-node .acts button.act-num:hover { background: #0d47a1; }
+    .ac-shield { position: absolute; transform: translate(-50%, -50%); z-index: 6; cursor: pointer; width: 38px; height: 42px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
+    .ac-shield svg { width: 100%; height: 100%; display: block; }
+    .ac-shield .sh-n { font: 800 17px Arial, sans-serif; fill: #fff; text-anchor: middle; }
+    .ac-shield.etat-absente svg path { fill: #d32f2f; }
+    .ac-shield.etat-defaillante svg path { fill: #ef6c00; }
+    .ac-shield.etat-contournee svg path { fill: #f9a825; }
+    .ac-shield.etat-presente svg path { fill: #2e7d32; }
+    .ac-linkdot { position: absolute; transform: translate(-50%, -50%); width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 3px dashed #1565c0; cursor: pointer; z-index: 8; animation: dotpulse 1.1s infinite; }
     .ac-linkdot:hover { background: var(--cdes-sky); }
-    @keyframes dotpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(33,150,243,.5); } 50% { box-shadow: 0 0 0 6px rgba(33,150,243,0); } }
+    @keyframes dotpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(21,101,192,.55); } 50% { box-shadow: 0 0 0 8px rgba(21,101,192,0); } }
     .cause-tree.placing .ac-line { stroke: var(--cdes-blue); stroke-dasharray: 4 3; }
     .hl-pulse { animation: hlpulse 1.6s ease; outline: 3px solid var(--cdes-blue); outline-offset: 2px; border-radius: 6px; }
     @keyframes hlpulse { 0% { background: rgba(33,150,243,.28); } 100% { background: transparent; } }
-    .rep-input { width: 100%; margin-top: 6px; font-size: 12px; padding: 4px 6px; }
     .btn-mini { font-size: 11px; padding: 3px 6px; border: 1px solid var(--line); background: #fff; border-radius: 6px; cursor: pointer; }
     .btn-mini:hover { background: #eef6fd; border-color: var(--cdes-sky); }
     .brl-num { text-align: center; font-weight: 700; color: var(--cdes-blue-dark); }
+
+    /* ---- Causes profondes : colonnes FOH, plusieurs causes par colonne ---- */
+    .causes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .causes-col + .causes-col { border-left: 1px solid var(--line); }
+    .causes-col > h4 { margin: 0; padding: 9px 12px; background: #f4f9fd; color: var(--cdes-blue-dark); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
+    .causes-list { padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+    .cause-item { border: 1px solid var(--line); border-radius: 7px; padding: 8px; background: #fff; }
+    .cause-item textarea { width: 100%; min-height: 62px; }
+    .cause-foot { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+    .cause-foot .rep-lbl { font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .cause-rep { width: 74px; font-size: 12px; padding: 4px 6px; text-align: center; }
+    .cause-item .remove-row { margin-left: auto; }
+    .causes-col .btn-add { margin: 0 10px 10px; }
     .ac-svg { position: absolute; top: 0; left: 0; pointer-events: none; }
     .ac-line { fill: none; stroke: var(--line); stroke-width: 2; }
     .ac-node { position: absolute; transform: translateY(-50%); box-sizing: border-box; width: 190px; display: flex; flex-direction: column; gap: 6px; border: 1.5px solid var(--line); border-radius: 9px; padding: 8px 10px; background: #fff; box-shadow: 0 1px 2px rgba(20,40,60,.06); }
@@ -1024,6 +1040,9 @@
       .grid.cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
       .grid.cols-3 { grid-template-columns: repeat(3, 1fr) !important; }
       .grid.cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
+      .causes-grid { grid-template-columns: repeat(3, 1fr) !important; break-inside: avoid; }
+      .cause-item { break-inside: avoid; }
+      .ac-shield, .ac-num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
       /* cartes : pas d'ombre, coupures autorisées mais blocs atomiques protégés */
       .card { box-shadow: none !important; border: 1px solid #c9d4dc !important; break-inside: auto; margin-bottom: 14px !important; }
@@ -1539,18 +1558,23 @@
         <h2>Causes profondes
           <button class="info-btn" type="button" id="open-causes">!</button>
         </h2>
-        <table>
-          <thead>
-            <tr><th>Technique</th><th>Organisationnelle</th><th>Humaine</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><textarea id="cause-technique"></textarea><input type="text" id="cause-technique-rep" class="rep-input" placeholder="Repère(s) arbre : ex. 2, 4"></td>
-              <td><textarea id="cause-orga"></textarea><input type="text" id="cause-orga-rep" class="rep-input" placeholder="Repère(s) arbre"></td>
-              <td><textarea id="cause-humain"></textarea><input type="text" id="cause-humain-rep" class="rep-input" placeholder="Repère(s) arbre"></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="causes-grid">
+          <div class="causes-col">
+            <h4>Technique</h4>
+            <div class="causes-list" id="causes-technique"></div>
+            <button class="btn btn-add no-print" type="button" onclick="addCauseRow('technique')">＋ Ajouter une cause</button>
+          </div>
+          <div class="causes-col">
+            <h4>Organisationnelle</h4>
+            <div class="causes-list" id="causes-orga"></div>
+            <button class="btn btn-add no-print" type="button" onclick="addCauseRow('orga')">＋ Ajouter une cause</button>
+          </div>
+          <div class="causes-col">
+            <h4>Humaine</h4>
+            <div class="causes-list" id="causes-humain"></div>
+            <button class="btn btn-add no-print" type="button" onclick="addCauseRow('humain')">＋ Ajouter une cause</button>
+          </div>
+        </div>
       </div>
 
       <div class="card">
@@ -2402,7 +2426,7 @@
         lbl.addEventListener('input', () => { node.label = lbl.textContent; });
         const acts = document.createElement('div'); acts.className = 'acts no-print';
         const add = document.createElement('button'); add.type = 'button'; add.textContent = '＋'; add.title = 'Ajouter un antécédent'; add.onclick = () => addChild(node.id); acts.appendChild(add);
-        const nb = document.createElement('button'); nb.type = 'button'; nb.textContent = '①'; nb.title = 'Attribuer / retirer un repère'; nb.onclick = () => toggleNum(node.id); acts.appendChild(nb);
+        const nb = document.createElement('button'); nb.type = 'button'; nb.className = 'act-num'; nb.textContent = '①'; nb.title = 'Attribuer / retirer un repère'; nb.onclick = () => toggleNum(node.id); acts.appendChild(nb);
         if (!node.root) {
           const ty = document.createElement('button'); ty.type = 'button'; ty.textContent = '⇄'; ty.title = 'Changer le type'; ty.onclick = () => cycleType(node.id); acts.appendChild(ty);
           const rm = document.createElement('button'); rm.type = 'button'; rm.textContent = '✕'; rm.title = 'Supprimer'; rm.onclick = () => del(node.id); acts.appendChild(rm);
@@ -2459,6 +2483,60 @@
       function nodeExists(id) { return !!find(root, id); }
       return { reset, load, toJSON, render, getLinks, onRender, nodeExists };
     })();
+    /* ===== Causes profondes : lignes multiples par colonne FOH ===== */
+    const CAUSE_CATS = { technique: 'causes-technique', orga: 'causes-orga', humain: 'causes-humain' };
+    function addCauseRow(cat, texte, rep) {
+      const wrap = document.getElementById(CAUSE_CATS[cat]); if (!wrap) return null;
+      const d = document.createElement('div'); d.className = 'cause-item'; d.dataset.cat = cat;
+      d.innerHTML = `
+        <textarea placeholder="Cause identifiée…"></textarea>
+        <div class="cause-foot">
+          <span class="rep-lbl">Repère(s) arbre</span>
+          <input type="text" class="cause-rep" placeholder="ex. 2, 4">
+          <button class="remove-row no-print" type="button" title="Supprimer cette cause">✕</button>
+        </div>`;
+      if (texte) d.querySelector('textarea').value = texte;
+      if (rep) d.querySelector('.cause-rep').value = rep;
+      d.querySelector('.remove-row').onclick = () => { d.remove(); if (typeof doSave === 'function') doSave(); };
+      wrap.appendChild(d);
+      autoGrow(d.querySelector('textarea'));
+      return d;
+    }
+    function causesData() {
+      const out = {};
+      Object.keys(CAUSE_CATS).forEach(cat => {
+        out[cat] = [...document.querySelectorAll('#' + CAUSE_CATS[cat] + ' .cause-item')]
+          .map(it => ({ texte: it.querySelector('textarea').value, rep: it.querySelector('.cause-rep').value }))
+          .filter(x => x.texte.trim() || x.rep.trim());
+      });
+      return out;
+    }
+    function restoreCauses(obj) {
+      if (!obj) return;
+      Object.keys(CAUSE_CATS).forEach(cat => {
+        const wrap = document.getElementById(CAUSE_CATS[cat]); if (!wrap) return;
+        wrap.innerHTML = '';
+        const list = obj[cat] || [];
+        if (!list.length) { addCauseRow(cat); return; }
+        list.forEach(x => addCauseRow(cat, typeof x === 'string' ? x : x.texte, typeof x === 'string' ? '' : x.rep));
+      });
+    }
+    /* texte agrégé d'une colonne, pour les payloads IA */
+    function causesText(cat) {
+      return [...document.querySelectorAll('#' + CAUSE_CATS[cat] + ' .cause-item textarea')]
+        .map(t => t.value.trim()).filter(Boolean).join(' ; ');
+    }
+    /* réponse IA : une chaîne → une ligne par cause (séparateur ;) */
+    function setCausesFromAI(cat, txt) {
+      if (txt == null) return;
+      const wrap = document.getElementById(CAUSE_CATS[cat]); if (!wrap) return;
+      const parts = String(txt).split(';').map(s => s.trim()).filter(Boolean);
+      wrap.innerHTML = '';
+      if (!parts.length) { addCauseRow(cat); return; }
+      parts.forEach(p => addCauseRow(cat, p.charAt(0).toUpperCase() + p.slice(1)));
+    }
+    Object.keys(CAUSE_CATS).forEach(cat => addCauseRow(cat));
+
     window.ct = ct;
     ct.render();
 
@@ -2477,7 +2555,7 @@
           const etat = tr.querySelector('select') ? tr.querySelector('select').value : 'defaillante';
           const sh = document.createElement('div');
           sh.className = 'ac-shield etat-' + etat; sh.dataset.bidx = i;
-          sh.innerHTML = '🛡<b>' + (i + 1) + '</b>';
+          sh.innerHTML = '<svg viewBox="0 0 38 42"><path d="M19 1 L36 7 V21 C36 31 28 38 19 41 C10 38 2 31 2 21 V7 Z" stroke="#fff" stroke-width="2.5"/><text class="sh-n" x="19" y="27">' + (i + 1) + '</text></svg>';
           sh.title = 'Barrière ' + (i + 1) + ' — cliquer pour surligner la ligne';
           sh.style.left = map[link].x + 'px'; sh.style.top = map[link].y + 'px';
           sh.onclick = () => highlightRow(tr);
@@ -2511,11 +2589,13 @@
       const sh = c.querySelector('.ac-shield[data-bidx="' + idx + '"]'); pulse(sh);
     }
     window.ctRepereClick = function (num) {
-      ['cause-technique-rep', 'cause-orga-rep', 'cause-humain-rep'].forEach(id => {
-        const inp = document.getElementById(id); if (!inp) return;
-        const nums = inp.value.split(/[^0-9]+/).filter(Boolean).map(Number);
-        if (nums.indexOf(num) >= 0) pulse(inp.closest('td') || inp);
+      let found = 0;
+      document.querySelectorAll('.cause-item').forEach(it => {
+        const nums = (it.querySelector('.cause-rep').value || '').split(/[^0-9]+/).filter(Boolean).map(Number);
+        if (nums.indexOf(num) >= 0) { pulse(it); found++; }
       });
+      if (!found) toast('Repère ' + num + ' : aucune cause associée pour le moment.');
+      else document.querySelector('.causes-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
     if (window.ct) ct.onRender(drawBarrierOverlay);
     renumberBarrieres();
@@ -2543,7 +2623,7 @@
     function applyAIResult(data) {
       if (!data) return;
       if (data.arbre) ct.load(data.arbre);
-      if (data.causes) { setVal('cause-technique', data.causes.technique); setVal('cause-orga', data.causes.organisationnel); setVal('cause-humain', data.causes.humain); }
+      if (data.causes) { setCausesFromAI('technique', data.causes.technique); setCausesFromAI('orga', data.causes.organisationnel); setCausesFromAI('humain', data.causes.humain); }
       if (Array.isArray(data.barrieres) && data.barrieres.length) {
         const body = document.getElementById('barrieres-body'); body.innerHTML = '';
         data.barrieres.forEach(b => {
@@ -2611,6 +2691,7 @@
       if (el.type === 'file' || el.id === 'import-file') return false;
       if (el.closest('#lm-palette') || el.closest('#cause-tree') || el.closest('.ai-chat') || el.closest('.regle-options')) return false;
       if (el.closest('#actions-body') || el.closest('#barrieres-body') || el.closest('#emargement-body')) return false;
+      if (el.closest('.causes-grid')) return false;
       return true;
     }
     const staticControls = () => [...document.querySelectorAll('#report-root input, #report-root textarea, #report-root select')].filter(isPersistable);
@@ -2627,6 +2708,7 @@
         actions: rowData('actions-body'), barrieres: rowData('barrieres-body'), emargement: rowData('emargement-body'),
         sigs: [...document.querySelectorAll('#emargement-body canvas')].map(c => { try { return c.toDataURL(); } catch (e) { return ''; } }),
         lesions: window.getLesionState ? window.getLesionState() : null,
+        causes: causesData(),
         arbre: window.ct ? ct.toJSON() : null
       };
     }
@@ -2652,6 +2734,7 @@
           if (document.getElementById('convocation-chk').checked) document.getElementById('emargement-wrap').classList.remove('hidden');
         }
         if (d.lesions && window.setLesionState) window.setLesionState(d.lesions);
+        if (d.causes) restoreCauses(d.causes);
         if (d.arbre && window.ct) ct.load(d.arbre);
         checkHIPO();
         growAll();
@@ -2736,6 +2819,13 @@
     function applyFriendly(d) {
       const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
       if (d.fields) Object.keys(d.fields).forEach(id => set(id, d.fields[id]));
+      /* causes : nouveau format {technique:[{texte,rep}]} ; sinon repli sur les anciens champs texte */
+      if (d.causes && (d.causes.technique || d.causes.orga || d.causes.humain)) restoreCauses(d.causes);
+      else if (d.fields && (d.fields['cause-technique'] || d.fields['cause-orga'] || d.fields['cause-humain'])) {
+        setCausesFromAI('technique', d.fields['cause-technique'] || '');
+        setCausesFromAI('orga', d.fields['cause-orga'] || '');
+        setCausesFromAI('humain', d.fields['cause-humain'] || '');
+      }
       if (d.checks) Object.keys(d.checks).forEach(id => { const el = document.getElementById(id); if (el) { el.checked = !!d.checks[id]; el.dispatchEvent(new Event('change')); } });
       if (d.nature && window.natureRestore) window.natureRestore(d.nature.cat, d.nature.type);
       if (d.regle) { const o = document.querySelector('.regle-opt[data-value="' + d.regle + '"]'); if (o) o.click(); }
@@ -2820,7 +2910,7 @@
         faits: collectFormData(),
         personne: { prenom: val('victime-prenom'), nom: val('victime-nom'), fonction: val('victime-fonction'), anciennete: val('victime-anciennete') },
         regleQuiSauve: (regleVal === 'non' || !regleVal) ? '' : ('RQS n°' + regleVal),
-        causes: { technique: val('cause-technique'), organisationnel: val('cause-orga'), humain: val('cause-humain') },
+        causes: { technique: causesText('technique'), organisationnel: causesText('orga'), humain: causesText('humain') },
         foh: { mode: val('foh-mode'), anciennete: val('foh-anciennete'), epi: val('foh-epi'), accueil: val('foh-accueil'), vigi: val('foh-vigi'), amont: val('foh-amont') },
         actionsPrises: [...document.querySelectorAll('#soins .qa-prec')].map(p => p.value.trim()).filter(Boolean)
       };
@@ -2892,7 +2982,7 @@
         faits: collectFormData(),
         personne: { prenom: val('victime-prenom'), nom: val('victime-nom'), fonction: val('victime-fonction') },
         regleQuiSauve: (regleVal === 'non' || !regleVal) ? '' : ('RQS n°' + regleVal),
-        causes: { technique: val('cause-technique'), organisationnel: val('cause-orga'), humain: val('cause-humain') },
+        causes: { technique: causesText('technique'), organisationnel: causesText('orga'), humain: causesText('humain') },
         actionsPrises: [...document.querySelectorAll('#soins .qa-prec')].map(p => p.value.trim()).filter(Boolean)
       };
     }
