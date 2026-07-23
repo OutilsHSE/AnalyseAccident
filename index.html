@@ -950,13 +950,13 @@
     .cause-item textarea { width: 100%; min-height: 60px; border: 0; padding: 0; background: transparent; resize: vertical; }
     .cause-item textarea:focus { outline: none; }
     .cause-item:focus-within { border-color: var(--cdes-sky); box-shadow: 0 0 0 3px rgba(116,204,239,.25); }
-    .cause-rep { position: absolute; top: -13px; right: 32px; width: 54px; height: 27px; padding: 0 4px; border-radius: 14px; border: 2px solid #fff; background: #1565c0; color: #fff; font: 800 13.5px Arial, sans-serif; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,.28); z-index: 2; }
-    .cause-rep::placeholder { color: rgba(255,255,255,.85); font-weight: 700; }
-    .cause-rep:placeholder-shown { background: #eef3f7; color: #546e7a; border-color: var(--line); box-shadow: none; }
-    .cause-rep:placeholder-shown::placeholder { color: #90a4ae; }
-    .cause-rep:focus { background: #1565c0; color: #fff; border-color: #fff; outline: none; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
-    .cause-del { position: absolute; top: -11px; right: 4px; width: 23px; height: 23px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: #c62828; font-size: 11px; line-height: 1; cursor: pointer; z-index: 2; }
-    .cause-del:hover { background: #ffebee; border-color: #ef9a9a; }
+    .cause-item input.cause-rep { position: absolute; top: -13px; right: 36px; width: 52px; min-width: 52px; height: 26px; padding: 0 3px; border-radius: 13px; border: 2px solid #fff; background: #1565c0; color: #fff; font-weight: 800; font-size: 13px; line-height: 22px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,.3); z-index: 3; }
+    .cause-item input.cause-rep::placeholder { color: rgba(255,255,255,.85); font-weight: 700; }
+    .cause-item input.cause-rep:placeholder-shown { background: #eceff1; color: #546e7a; border-color: #cfd8dc; box-shadow: none; }
+    .cause-item input.cause-rep:placeholder-shown::placeholder { color: #90a4ae; font-weight: 600; }
+    .cause-item input.cause-rep:focus { background: #1565c0; color: #fff; border-color: #fff; outline: none; box-shadow: 0 2px 7px rgba(0,0,0,.32); }
+    .cause-item button.cause-del { position: absolute; top: -11px; right: 6px; width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: #c62828; font-size: 11px; line-height: 1; cursor: pointer; z-index: 3; }
+    .cause-item button.cause-del:hover { background: #ffebee; border-color: #ef9a9a; }
     .causes-col .btn-add { margin: 0 10px 10px; }
     .ac-svg { position: absolute; top: 0; left: 0; pointer-events: none; }
     .ac-line { fill: none; stroke: var(--line); stroke-width: 2; }
