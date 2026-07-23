@@ -920,6 +920,23 @@
     .tree-scroll { overflow-x: auto; padding: 10px 0 4px; border: 1px dashed var(--line); border-radius: 10px; background: #fbfdff; }
 
     .cause-tree { position: relative; }
+    .ac-num { position: absolute; top: -9px; left: -9px; width: 22px; height: 22px; border-radius: 50%; background: var(--cdes-blue); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 4; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+    .ac-shield { position: absolute; transform: translate(-50%, -50%); z-index: 5; cursor: pointer; font-size: 20px; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+    .ac-shield b { position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; color: #fff; }
+    .ac-shield.etat-absente { color: #e53935; }
+    .ac-shield.etat-defaillante { color: #fb8c00; }
+    .ac-shield.etat-contournee { color: #f9a825; }
+    .ac-shield.etat-presente { color: #43a047; }
+    .ac-linkdot { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 2px dashed var(--cdes-blue); cursor: pointer; z-index: 6; animation: dotpulse 1.1s infinite; }
+    .ac-linkdot:hover { background: var(--cdes-sky); }
+    @keyframes dotpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(33,150,243,.5); } 50% { box-shadow: 0 0 0 6px rgba(33,150,243,0); } }
+    .cause-tree.placing .ac-line { stroke: var(--cdes-blue); stroke-dasharray: 4 3; }
+    .hl-pulse { animation: hlpulse 1.6s ease; outline: 3px solid var(--cdes-blue); outline-offset: 2px; border-radius: 6px; }
+    @keyframes hlpulse { 0% { background: rgba(33,150,243,.28); } 100% { background: transparent; } }
+    .rep-input { width: 100%; margin-top: 6px; font-size: 12px; padding: 4px 6px; }
+    .btn-mini { font-size: 11px; padding: 3px 6px; border: 1px solid var(--line); background: #fff; border-radius: 6px; cursor: pointer; }
+    .btn-mini:hover { background: #eef6fd; border-color: var(--cdes-sky); }
+    .brl-num { text-align: center; font-weight: 700; color: var(--cdes-blue-dark); }
     .ac-svg { position: absolute; top: 0; left: 0; pointer-events: none; }
     .ac-line { fill: none; stroke: var(--line); stroke-width: 2; }
     .ac-node { position: absolute; transform: translateY(-50%); box-sizing: border-box; width: 190px; display: flex; flex-direction: column; gap: 6px; border: 1.5px solid var(--line); border-radius: 9px; padding: 8px 10px; background: #fff; box-shadow: 0 1px 2px rgba(20,40,60,.06); }
@@ -1528,9 +1545,9 @@
           </thead>
           <tbody>
             <tr>
-              <td><textarea id="cause-technique"></textarea></td>
-              <td><textarea id="cause-orga"></textarea></td>
-              <td><textarea id="cause-humain"></textarea></td>
+              <td><textarea id="cause-technique"></textarea><input type="text" id="cause-technique-rep" class="rep-input" placeholder="Repère(s) arbre : ex. 2, 4"></td>
+              <td><textarea id="cause-orga"></textarea><input type="text" id="cause-orga-rep" class="rep-input" placeholder="Repère(s) arbre"></td>
+              <td><textarea id="cause-humain"></textarea><input type="text" id="cause-humain-rep" class="rep-input" placeholder="Repère(s) arbre"></td>
             </tr>
           </tbody>
         </table>
@@ -1542,9 +1559,11 @@
         <table id="barrieres-table">
           <thead>
             <tr>
+              <th style="width:36px;">N°</th>
               <th>Barrière attendue</th>
-              <th style="width:150px;">État</th>
+              <th style="width:130px;">État</th>
               <th>Pourquoi elle n'a pas joué son rôle</th>
+              <th style="width:120px;" class="no-print">Sur l'arbre</th>
               <th style="width:50px;" class="no-print">Suppr.</th>
             </tr>
           </thead>
@@ -1998,6 +2017,7 @@
       const tb = document.getElementById('barrieres-body');
       const tr = document.createElement('tr');
       tr.innerHTML = `
+        <td class="brl-num"></td>
         <td><textarea placeholder="Ex. balisage de zone, EPI, consignation…"></textarea></td>
         <td>
           <select>
@@ -2008,8 +2028,11 @@
           </select>
         </td>
         <td><textarea placeholder="Analyse"></textarea></td>
-        <td class="no-print"><button class="remove-row" type="button" onclick="this.closest('tr').remove();">✕</button></td>`;
+        <td class="no-print"><input type="hidden" class="brl-link"><button class="btn-mini" type="button" title="Positionner / retirer sur l'arbre" onclick="placeBarriere(this.closest('tr'))">📍 Placer</button> <button class="btn-mini" type="button" title="Localiser sur l'arbre" onclick="locateBarriere(this.closest('tr'))">🔍</button></td>
+        <td class="no-print"><button class="remove-row" type="button" onclick="this.closest('tr').remove(); if(typeof renumberBarrieres==='function') renumberBarrieres();">✕</button></td>`;
       tb.appendChild(tr);
+      tr.querySelector('select').addEventListener('change', () => { if (typeof ctRefresh === 'function') ctRefresh(); });
+      if (typeof renumberBarrieres === 'function') renumberBarrieres();
     }
     addBarriereRow();
 
@@ -2356,33 +2379,37 @@
     /* ===== Arbre des causes (éditeur visuel horizontal, méthode INRS) ===== */
     const ct = (function () {
       let seq = 0;
-      const TYPES = ['variation', 'permanent']; // le fait ultime (racine) est fixe
+      const TYPES = ['variation', 'permanent'];
       const TAGS = { ultime: 'Fait ultime', variation: 'Variation', permanent: 'État permanent' };
-      const newRoot = () => ({ id: 'n' + (++seq), label: 'Lésion / événement (fait ultime)', type: 'ultime', root: true, children: [] });
+      const newRoot = () => ({ id: 'n' + (++seq), label: 'Lésion / événement (fait ultime)', type: 'ultime', root: true, num: null, children: [] });
       let root = newRoot();
+      let afterRender = null, linkPts = [];
       const find = (n, id) => n.id === id ? n : n.children.reduce((a, c) => a || find(c, id), null);
       const parentOf = (n, id, p) => n.id === id ? p : n.children.reduce((a, c) => a || parentOf(c, id, n), null);
-      function addChild(id) { find(root, id).children.push({ id: 'n' + (++seq), label: 'Antécédent…', type: 'variation', children: [] }); render(); }
+      function allNums() { const out = []; (function w(n) { if (n.num) out.push(n.num); n.children.forEach(w); })(root); return out; }
+      function toggleNum(id) { const n = find(root, id); if (!n) return; if (n.num) n.num = null; else { const used = allNums(); let k = 1; while (used.includes(k)) k++; n.num = k; } render(); }
+      function addChild(id) { find(root, id).children.push({ id: 'n' + (++seq), label: 'Antécédent…', type: 'variation', num: null, children: [] }); render(); }
       function del(id) { const p = parentOf(root, id, null); if (p) { p.children = p.children.filter(c => c.id !== id); render(); } }
       function cycleType(id) { const n = find(root, id); if (n.root) return; n.type = TYPES[(TYPES.indexOf(n.type) + 1) % TYPES.length]; render(); }
 
       function nodeBox(node) {
         const box = document.createElement('div');
         box.className = 'ac-node t-' + (node.type || 'variation');
+        box.dataset.id = node.id;
+        if (node.num) { const bd = document.createElement('div'); bd.className = 'ac-num'; bd.textContent = node.num; bd.title = 'Repère ' + node.num + ' (cliquer pour surligner les causes liées)'; bd.onclick = () => window.ctRepereClick && window.ctRepereClick(node.num); box.appendChild(bd); }
         const tag = document.createElement('div'); tag.className = 'tag'; tag.textContent = TAGS[node.type] || 'Variation';
         const lbl = document.createElement('div'); lbl.className = 'lbl'; lbl.contentEditable = 'true'; lbl.textContent = node.label;
         lbl.addEventListener('input', () => { node.label = lbl.textContent; });
         const acts = document.createElement('div'); acts.className = 'acts no-print';
-        const add = document.createElement('button'); add.type = 'button'; add.textContent = '＋'; add.title = 'Ajouter un antécédent'; add.onclick = () => addChild(node.id);
-        acts.appendChild(add);
+        const add = document.createElement('button'); add.type = 'button'; add.textContent = '＋'; add.title = 'Ajouter un antécédent'; add.onclick = () => addChild(node.id); acts.appendChild(add);
+        const nb = document.createElement('button'); nb.type = 'button'; nb.textContent = '①'; nb.title = 'Attribuer / retirer un repère'; nb.onclick = () => toggleNum(node.id); acts.appendChild(nb);
         if (!node.root) {
-          const ty = document.createElement('button'); ty.type = 'button'; ty.textContent = '⇄'; ty.title = 'Changer le type (variation / état permanent)'; ty.onclick = () => cycleType(node.id); acts.appendChild(ty);
+          const ty = document.createElement('button'); ty.type = 'button'; ty.textContent = '⇄'; ty.title = 'Changer le type'; ty.onclick = () => cycleType(node.id); acts.appendChild(ty);
           const rm = document.createElement('button'); rm.type = 'button'; rm.textContent = '✕'; rm.title = 'Supprimer'; rm.onclick = () => del(node.id); acts.appendChild(rm);
         }
         box.appendChild(tag); box.appendChild(lbl); box.appendChild(acts);
         return box;
       }
-      // ---- placement : colonnes par profondeur, y = milieu des enfants ----
       const NS = 'http://www.w3.org/2000/svg';
       const ROW = 118, COL = 240, BOXW = 190;
       function layout() {
@@ -2396,37 +2423,102 @@
         return { w: maxD * COL + BOXW + 4, h: Math.max(1, leaf) * ROW };
       }
       function render() {
-        const c = document.getElementById('cause-tree'); c.innerHTML = '';
+        const c = document.getElementById('cause-tree'); if (!c) return; c.innerHTML = '';
         const dim = layout();
         c.style.width = dim.w + 'px'; c.style.height = dim.h + 'px';
         const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'ac-svg'); svg.setAttribute('width', dim.w); svg.setAttribute('height', dim.h);
+        linkPts = [];
         (function draw(n) {
           n.children.forEach(ch => {
             const px = n._x, py = n._y, cx = ch._x + BOXW, cy = ch._y, mid = (px + cx) / 2;
-            const p = document.createElementNS(NS, 'path');
-            p.setAttribute('class', 'ac-line');
+            const p = document.createElementNS(NS, 'path'); p.setAttribute('class', 'ac-line');
             p.setAttribute('d', `M ${px} ${py} L ${mid} ${py} L ${mid} ${cy} L ${cx} ${cy}`);
-            svg.appendChild(p); draw(ch);
+            svg.appendChild(p);
+            linkPts.push({ childId: ch.id, x: mid, y: (py + cy) / 2 });
+            draw(ch);
           });
         })(root);
         c.appendChild(svg);
-        (function place(n) {
-          const box = nodeBox(n);
-          box.style.left = n._x + 'px'; box.style.top = n._y + 'px';
-          c.appendChild(box); n.children.forEach(place);
-        })(root);
+        (function place(n) { const box = nodeBox(n); box.style.left = n._x + 'px'; box.style.top = n._y + 'px'; c.appendChild(box); n.children.forEach(place); })(root);
+        if (afterRender) afterRender(linkPts);
       }
       function reset() { root = newRoot(); render(); }
       function load(obj) {
-        seq = 0;
-        const conv = (o, r) => ({ id: 'n' + (++seq), label: o.label || '', type: r ? 'ultime' : (o.type === 'permanent' || o.type === 'etat_permanent' ? 'permanent' : 'variation'), root: r, children: (o.children || []).map(x => conv(x, false)) });
+        seq = 0; const usedIds = [];
+        const conv = (o, r) => {
+          let id;
+          if (o.id && /^n\d+$/.test(o.id) && usedIds.indexOf(o.id) < 0) { id = o.id; const k = +id.slice(1); if (k > seq) seq = k; } else { id = 'n' + (++seq); }
+          usedIds.push(id);
+          return { id, label: o.label || '', type: r ? 'ultime' : (o.type === 'permanent' ? 'permanent' : 'variation'), root: r, num: o.num || null, children: (o.children || []).map(x => conv(x, false)) };
+        };
         root = conv(obj || { label: 'Lésion / événement', children: [] }, true); render();
       }
-      function toJSON() { const strip = n => ({ label: n.label, type: n.type, children: n.children.map(strip) }); return strip(root); }
-      return { reset, load, toJSON, render };
+      function toJSON() { const strip = n => ({ id: n.id, label: n.label, type: n.type, num: n.num || null, children: n.children.map(strip) }); return strip(root); }
+      function getLinks() { return linkPts.slice(); }
+      function onRender(cb) { afterRender = cb; }
+      function nodeExists(id) { return !!find(root, id); }
+      return { reset, load, toJSON, render, getLinks, onRender, nodeExists };
     })();
     window.ct = ct;
     ct.render();
+
+    /* ===== Barrières sur l'arbre : boucliers, placement, surlignage ===== */
+    let placingRow = null;
+    function pulse(el) { if (!el) return; el.classList.add('hl-pulse'); setTimeout(() => el.classList.remove('hl-pulse'), 1600); }
+    function highlightRow(tr) { pulse(tr); tr.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    function drawBarrierOverlay(linkPts) {
+      const c = document.getElementById('cause-tree'); if (!c || !window.ct) return;
+      c.querySelectorAll('.ac-shield, .ac-linkdot').forEach(e => e.remove());
+      const pts = linkPts || ct.getLinks(); const map = {}; pts.forEach(l => map[l.childId] = l);
+      const rows = [...document.querySelectorAll('#barrieres-body tr')];
+      rows.forEach((tr, i) => {
+        const link = tr.querySelector('.brl-link') ? tr.querySelector('.brl-link').value : '';
+        if (link && map[link]) {
+          const etat = tr.querySelector('select') ? tr.querySelector('select').value : 'defaillante';
+          const sh = document.createElement('div');
+          sh.className = 'ac-shield etat-' + etat; sh.dataset.bidx = i;
+          sh.innerHTML = '🛡<b>' + (i + 1) + '</b>';
+          sh.title = 'Barrière ' + (i + 1) + ' — cliquer pour surligner la ligne';
+          sh.style.left = map[link].x + 'px'; sh.style.top = map[link].y + 'px';
+          sh.onclick = () => highlightRow(tr);
+          c.appendChild(sh);
+        }
+      });
+      if (placingRow) {
+        pts.forEach(l => {
+          const d = document.createElement('div'); d.className = 'ac-linkdot'; d.title = 'Poser la barrière ici';
+          d.style.left = l.x + 'px'; d.style.top = l.y + 'px';
+          d.onclick = () => { const inp = placingRow.querySelector('.brl-link'); if (inp) inp.value = l.childId; placingRow = null; c.classList.remove('placing'); ctRefresh(); if (typeof doSave === 'function') doSave(); };
+          c.appendChild(d);
+        });
+        c.classList.add('placing');
+      } else { c.classList.remove('placing'); }
+    }
+    function ctRefresh() { if (window.ct) drawBarrierOverlay(ct.getLinks()); }
+    function renumberBarrieres() { document.querySelectorAll('#barrieres-body tr').forEach((tr, i) => { const n = tr.querySelector('.brl-num'); if (n) n.textContent = i + 1; }); ctRefresh(); }
+    function placeBarriere(tr) {
+      const inp = tr.querySelector('.brl-link'); if (!inp) return;
+      if (inp.value) { inp.value = ''; ctRefresh(); if (typeof doSave === 'function') doSave(); return; }
+      placingRow = tr; ctRefresh();
+      const c = document.getElementById('cause-tree'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function locateBarriere(tr) {
+      const link = tr.querySelector('.brl-link') ? tr.querySelector('.brl-link').value : '';
+      if (!link) { toast("Barrière non positionnée sur l'arbre."); return; }
+      const rows = [...document.querySelectorAll('#barrieres-body tr')]; const idx = rows.indexOf(tr);
+      const c = document.getElementById('cause-tree'); if (!c) return;
+      c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const sh = c.querySelector('.ac-shield[data-bidx="' + idx + '"]'); pulse(sh);
+    }
+    window.ctRepereClick = function (num) {
+      ['cause-technique-rep', 'cause-orga-rep', 'cause-humain-rep'].forEach(id => {
+        const inp = document.getElementById(id); if (!inp) return;
+        const nums = inp.value.split(/[^0-9]+/).filter(Boolean).map(Number);
+        if (nums.indexOf(num) >= 0) pulse(inp.closest('td') || inp);
+      });
+    };
+    if (window.ct) ct.onRender(drawBarrierOverlay);
+    renumberBarrieres();
 
     /* ===== Sérialisation des faits ===== */
     function collectFormData() {
@@ -2549,7 +2641,7 @@
         if (d.nature && window.natureRestore) window.natureRestore(d.nature.cat, d.nature.type);
         if (d.regle) { const opt = document.querySelector('.regle-opt[data-value="' + d.regle + '"]'); if (opt) opt.click(); }
         if (Array.isArray(d.actions)) { const b = document.getElementById('actions-body'); b.innerHTML = ''; d.actions.forEach(v => { addActionRow(); fillRow(b.lastElementChild, v); }); renumber(); }
-        if (Array.isArray(d.barrieres)) { const b = document.getElementById('barrieres-body'); b.innerHTML = ''; d.barrieres.forEach(v => { addBarriereRow(); fillRow(b.lastElementChild, v); }); }
+        if (Array.isArray(d.barrieres)) { const b = document.getElementById('barrieres-body'); b.innerHTML = ''; d.barrieres.forEach(v => { addBarriereRow(); fillRow(b.lastElementChild, v); }); if (typeof renumberBarrieres === 'function') renumberBarrieres(); }
         if (Array.isArray(d.emargement)) {
           const b = document.getElementById('emargement-body'); b.innerHTML = '';
           d.emargement.forEach((v, idx) => {
@@ -2659,7 +2751,8 @@
       }
       if (d.barrieres) {
         const b = document.getElementById('barrieres-body'); b.innerHTML = '';
-        d.barrieres.forEach(x => { addBarriereRow(); const tr = b.lastElementChild; const tas = tr.querySelectorAll('textarea'); const sel = tr.querySelector('select'); if (tas[0]) tas[0].value = x.barriere || ''; if (sel && x.etat) sel.value = x.etat; if (tas[1]) tas[1].value = x.pourquoi || ''; });
+        d.barrieres.forEach(x => { addBarriereRow(); const tr = b.lastElementChild; const tas = tr.querySelectorAll('textarea'); const sel = tr.querySelector('select'); const lk = tr.querySelector('.brl-link'); if (tas[0]) tas[0].value = x.barriere || ''; if (sel && x.etat) sel.value = x.etat; if (tas[1]) tas[1].value = x.pourquoi || ''; if (lk && x.link) lk.value = x.link; });
+        if (typeof renumberBarrieres === 'function') renumberBarrieres();
       }
       if (d.evals) ['eval1', 'eval2', 'eval3'].forEach(n => { if (d.evals[n]) { const r = document.querySelector('input[name="' + n + '"][value="' + d.evals[n] + '"]'); if (r) r.checked = true; } });
       if (d.diffusion) { const c = document.getElementById('diffusion-chk'); if (c) c.checked = true; }
