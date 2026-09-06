@@ -1124,6 +1124,14 @@
             <label class="field">Rédacteur</label>
             <input type="text" id="redacteur" placeholder="Rédacteur du rapport">
           </div>
+          <div>
+            <label class="field">Agence</label>
+            <select id="agence">
+              <option value="Île-de-France" selected>Île-de-France</option>
+              <option value="Nouvelle-Aquitaine">Nouvelle-Aquitaine</option>
+              <option value="Bretagne-Pays de la Loire">Bretagne-Pays de la Loire</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -1456,6 +1464,18 @@
             </div>
             <input type="text" class="qa-prec" placeholder="Précision : détail de la mission aménagée…">
           </div>
+          <div class="qa-item">
+            <div class="qa-head">
+              <span class="qa-q">Nombre de jours d'arrêt</span>
+              <input type="number" id="jours-arret" min="0" style="width:130px;" placeholder="0">
+            </div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-head">
+              <span class="qa-q">Déclaré à la CPAM</span>
+              <div class="seg"><label><input type="radio" name="cpam" value="oui">Oui</label><label><input type="radio" name="cpam" value="non">Non</label></div>
+            </div>
+          </div>
         </div>
 
         <!-- Environnement -->
@@ -1668,6 +1688,12 @@
         <div class="no-print" style="margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
           <button class="btn btn-primary" type="button" id="btn-pa" onclick="envoyerPA()">📤 Envoyer les actions au PA global HSE</button>
           <span id="pa-result" style="font-size:12.5px;"></span>
+        </div>
+        <label class="field" style="margin-top:16px;">Analyse — ce qu'on retient (pour le journal)</label>
+        <textarea id="analyse-retenir" placeholder="Synthèse courte de l'événement pour le reporting…"></textarea>
+        <div class="no-print" style="margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-primary" type="button" id="btn-journal" onclick="envoyerJournal()">📒 Envoyer au journal des AT</button>
+          <span id="journal-result" style="font-size:12.5px;"></span>
         </div>
       </div>
 
@@ -3126,6 +3152,44 @@
         refs.push(hashStr(rid + '|' + c.chantier + '|' + accDate + '|' + action));
       });
       return { rows, refs };
+    }
+    function segVal(name){ const el=document.querySelector('input[name="'+name+'"]:checked'); return el?el.value:''; }
+    function collectJournalData() {
+      const val=id=>(document.getElementById(id)?.value||'').trim();
+      const ns=natureState();
+      const catLabel={humain:'Humain',environnement:'Environnement',industriel:'Industriel'}[ns.cat]||ns.cat||'';
+      const typeSel=document.getElementById({humain:'select-humain',environnement:'select-environnement',industriel:'select-industriel'}[ns.cat]);
+      const typeLabel=(typeSel&&typeSel.selectedIndex>=0)?typeSel.options[typeSel.selectedIndex].text.trim():'';
+      const dateFR=d=>{ if(!d) return ''; const p=d.split('-'); return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d; };
+      const les=window.getLesionState?window.getLesionState():{entries:[]};
+      const zones=[...new Set((les.entries||[]).map(e=>e.part))].join(', ');
+      const bset={}; (les.entries||[]).forEach(e=>(e.keys||[]).forEach(k=>bset[k]=1));
+      const bl=[...document.querySelectorAll('#lm-palette .lm-lesion')].filter(l=>bset[l.dataset.key]).map(l=>l.querySelector('.lm-name').textContent.trim());
+      const regle=(document.getElementById('regle-selected')?.dataset.value)||'non';
+      const seg=n=>{const v=segVal(n);return v==='oui'?'Oui':(v==='non'?'Non':'');};
+      const temoin=document.getElementById('no-temoin')?.checked?'Pas de témoin':((val('temoin-prenom')+' '+val('temoin-nom')).trim());
+      const header=["Agence","Date accident","Heure","Type","Catégorie","Collaborateur","Fonction","Chantier","Lieu / poste","Résumé","Zone lésée","Type de blessure","Gravité réelle","Gravité potentielle","HIPO","Règle qui sauve","Arrêt (O/N)","Jours d'arrêt","Poste aménagé (O/N)","Témoin","Déclaré CPAM","Analyse (ce qu'on retient)","N° rapport","Date rédaction","Rédacteur"];
+      const row=[ val('agence'), dateFR(val('accident-date')), val('accident-heure'), typeLabel, catLabel,
+        (val('victime-prenom')+' '+val('victime-nom')).trim(), val('victime-fonction'), val('chantier'), val('loc-precise'), val('resume'),
+        zones, bl.join(', '), getChecked('grav-reelle')||'', getChecked('grav-potentielle')||'',
+        (window.__HIPO?'Oui':'Non'), ((regle==='non'||!regle)?'Non':('RQS n°'+regle)),
+        seg('choix-arret'), val('jours-arret'), seg('choix-mission'), temoin,
+        seg('cpam'), val('analyse-retenir'), val('report-id'), dateFR(val('report-date')), val('redacteur') ];
+      return { ref: val('report-id'), header, row };
+    }
+    async function envoyerJournal() {
+      const st=document.getElementById('journal-result');
+      if(!AI_ENDPOINT){ st.textContent='⚠ Endpoint IA non configuré.'; st.style.color='#c62828'; return; }
+      if(!collectFormData().resume){ st.textContent="Remplis d'abord le résumé de l'événement."; st.style.color='#c62828'; return; }
+      if(!collectJournalData().ref){ st.textContent="N° de rapport manquant (nécessaire pour le journal)."; st.style.color='#c62828'; return; }
+      st.textContent='Envoi au journal…'; st.style.color='var(--muted)';
+      try{
+        const d=collectJournalData();
+        const r=await fetch(AI_ENDPOINT,{method:'POST',body:JSON.stringify({action:'journal',header:d.header,row:d.row,ref:d.ref})});
+        const data=JSON.parse(await r.text());
+        if(data.erreur){ st.textContent='Erreur : '+data.erreur; st.style.color='#c62828'; return; }
+        st.textContent=data.updated?'Ligne du journal mise à jour ✓':'Ajouté au journal des AT ✓'; st.style.color='#2e7d32';
+      }catch(e){ st.textContent='Erreur : '+e.message; st.style.color='#c62828'; }
     }
     async function envoyerPA() {
       const res = document.getElementById('pa-result');
