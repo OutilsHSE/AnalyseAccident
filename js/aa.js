@@ -1397,7 +1397,8 @@
       if (!AI_ENDPOINT) { res.textContent = "Appareil non branché : ouvre l'analyse depuis la tuile de l'intranet HSE."; res.style.color = '#c62828'; return; }
       res.textContent = "Envoi en cours…"; res.style.color = 'var(--muted)';
       try {
-        const r = await fetchServeur(AI_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: 'plan', header: PA_HEADER, rows, refs }) });
+        const agence = (document.getElementById('agence')?.value || '').trim();   // lot Agence (09/10/2026)
+        const r = await fetchServeur(AI_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: 'plan', header: PA_HEADER, rows, refs, agence }) });
         const data = JSON.parse(await r.text());
         if (data.ok) {
           let msg = data.added + " action(s) ajoutée(s)";
